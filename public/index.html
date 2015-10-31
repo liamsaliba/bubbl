@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+	<head>
+		<title>bubbl. : bubbl.s for all anonymous</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=4.0">
+
+		<!--CSS-->
+		<link rel="stylesheet" type="text/css" href="/assets/style.css">
+
+		<!--Fonts-->
+		<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+		<!--link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet"-->
+
+		<link rel="icon" type="image/png" href="/assets/favicon-16x16.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="/assets/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/assets/favicon-64x64.png" sizes="64x64">
+	</head>
+	<body>
+		<div id="float-logo">
+			<img id="logo" src="/assets/bubbl.png" height="35px">
+		</div>
+		<div id="float-username"></div>
+		<div id="float-panel">
+			<p class="version">bubbl 0.12 (2015-10-31a)</span>
+			<h2 id="online-count"></h2>
+			<ul id="users"></ul>
+			<div id="settings"></div>
+		</div>
+
+		<div id="msgs">
+			<ul id="messages"></ul>
+		</div>
+
+		<div id="input">
+			<form action="">
+				<input id="m" autofocus autocomplete="off" placeholder="type a message here"\>
+				<button>send</button>
+			</form>
+		</div>
+
+		<!--Scripts-->
+		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+		<script src="/assets/color2color.js"></script>
+		<script src="/assets/main.js"></script>
+	</body>
+</html>
