@@ -6,20 +6,13 @@ var typing = false; //TODO
 // set username
 var user_hue = 280;
 var username;
-var prev_msg_username;
-var prev_msg;
+var prev_msg_username; // used for '.same'
+var prev_msg; // to be used for spam protection
 
 // bubbl logo
 var bubbl = "<object data=\"/assets/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
 
 var colours = {}; // these are defined in the colour section.
-
-
-// fix padding for messages
-//$("#msgs").css('padding-top', (window.innerHeight-100));
-//$(window).resize(function(){
-//	$("#msgs").css('padding-top', (window.innerHeight-100));
-//});
 
 
 // Talking TO server
@@ -40,6 +33,7 @@ $(window).focus(function(){
   	socket.emit('back');
 });
 
+// logo click menu
 $('#logo').click(function(){
 	$('#logo').animate({height: '30px'}, "fast");
 	if($('#float-panel').css('display') === 'none')
@@ -49,6 +43,7 @@ $('#logo').click(function(){
     $('#logo').animate({height: '35px'}, "fast");
 });
 
+// TODO: make this work.  (Append username to text box)
 $('.u').click(function(){
 	$("form input").append($(this).text());
 });
@@ -154,7 +149,9 @@ $('form').submit(function(){
 	else
 		send_msg(m);
 	
+	// scroll to bottom
 	$("#messages").scrollTop($("#messages")[0].scrollHeight);
+	$("#newmsg").animate({bottom: "0px"}, "fast");
 
 	// reset box
 	$('#m').val('');
@@ -207,21 +204,20 @@ socket.on('setname', function(m){
 
 // message into client
 function msg(id, m){	  			
-	var offset = document.body.offsetHeight;
-
+	var offset = $("#messages")[0].scrollHeight;
 	$('#messages').append($('<li>').append($('<div class="' + id + '">').html(m)));
 
 	if(isEnabled(id)) //disable
 		$('#messages div:last').fadeIn(300);
 
-	scroll(offset);	
+	if(id !== "n e")
+		scroll(offset);
 
 	prev_msg_username = false;
 }
 // replies
 function msgm(m, user, hue){
-	var offset = document.body.offsetHeight;
-
+	var offset = $("#messages")[0].scrollHeight;
 	if (~m.indexOf(username)){
 		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible">: </span>')).append($('<div class="i">').html(m)));
 		if(prev_msg_username === user)
@@ -249,7 +245,7 @@ function send_msg(m){
 		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible">: </span>')).append($('<div class="o">').html(m)))
 		if(prev_msg_username === username)
 			$(".u:last, .o:last").addClass("same");
-		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300).fadeIn(300);
+		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
 		$('.u:last').fadeIn(300);
 		prev_msg_username = username;
 	}
@@ -265,6 +261,7 @@ function is_legal(m){
 		return true;
 }
 
+// TODO: make this a setting in menu... enables / disables certain messages
 function isEnabled(id){
 	switch (id) {
 		case "n j":
@@ -276,14 +273,23 @@ function isEnabled(id){
 	}
 }
 
+$("#messages").scroll(function(){
+	console.log($("#messages")[0].scrollHeight + " : " + ($(window).height()-50) + " : " + $("#messages").outerHeight());
+	if($("#messages")[0].scrollHeight - $("#messages").scrollTop() - $("#messages").outerHeight() < 1){
+		$("#newmsg").animate({bottom: "0px"}, "fast");
+		console.log("success!")
+	}
+});
+
 // Autoscroll
 function scroll(offset){
-	var msg = $("#messages");
-	console.log($("#messages").scrollTop());
-
-
-	if((window.innerHeight < document.body.offsetHeight) && ((window.innerHeight + window.scrollY) === offset) || window.scrollY === 0)
-		$("#messages").scrollTop($("#messages").scrollHeight);
+	if($(window).height()-50 < $("#messages")[0].scrollHeight) { // if scrolled to bottom
+		if(offset - $("#messages").scrollTop() == $("#messages").outerHeight())
+			$("#messages").scrollTop($("#messages")[0].scrollHeight);
+		else {
+			$("#newmsg").animate({bottom: "60px"}, "fast");
+		}
+	}
 }
 
 // for fix string

@@ -108,7 +108,7 @@ function genUser() {
 	var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     var name = [];
-    for(var i = 0; i < (Math.ceil(Math.random()*7) + 4); i++)
+    for(var i = 0; i < (Math.ceil(Math.random()*6) + 4); i++)
     	name.push(possible.charAt(Math.floor(Math.random() * possible.length)));
 
 	return name.join('');

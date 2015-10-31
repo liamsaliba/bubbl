@@ -9,6 +9,10 @@
 	box-sizing: border-box;
 	text-decoration: none;
 	-webkit-text-size-adjust: none;
+	-webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
 }
 
 body {
@@ -127,8 +131,6 @@ body {
 #msgs {
 	position: fixed;
 	padding: 0 8px;
-	width: 100%;
-	height: calc(100% - 50px);
 }
 
 /* messages divider */
@@ -164,7 +166,7 @@ body {
 	-webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
-	max-width: calc(100% - 100px);
+	max-width: calc(100% - 105px);
 }
 
 /* Specific settings
@@ -251,21 +253,19 @@ body {
 }
 
 /* own username */
-.u.user, .user {
+.user {
 	font-weight: bold;
 }
-
 
 
 /* new message indicator */
 #newmsg {
 	position: fixed;
 	right: 10px;
-	bottom: 60px;
+	bottom: 0px;
 	padding: 10px 10px;
 	padding-top: 5px;
 	font-size: 14px;
-	//display: none;
 	border-radius: 10px;
 	-webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
