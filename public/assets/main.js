@@ -14,7 +14,6 @@ var bubbl = "<object data=\"/assets/bubbl.svg\" type=\"image/svg+xml\" height=\"
 
 var colours = {}; // these are defined in the colour section.
 
-
 // Talking TO server
 msg('n d', "you joined " + bubbl);
 
@@ -57,8 +56,21 @@ $('#float-username').click(function(){
 	socket.emit("join");
 });
 
+$("textarea").keydown(function(e){
+    // Enter was pressed without shift key
+    if (e.keyCode == 13 && !e.shiftKey)
+    {
+        // prevent default behavior
+        e.preventDefault();
+        $('form').submit();
+    }
+});
+
 // Chat box parsing
 $('form').submit(function(){
+	return parseChatBox();
+});
+function parseChatBox(){
 	// remove white space, make html safe.
 	var m = fix($('#m').val().trim());
 
@@ -70,8 +82,6 @@ $('form').submit(function(){
 			$("#messages").empty();
 		// !h
 		else if ((m.charAt(1) === "h" && m.substring(2) === " ") && !isNaN(m.substring(3))){
-			console.log(parseInt(m.substring(3)));
-
 			change_color(m.substring(3));
 			msg('n d', "successfully changed your hue to " + m.substring(3));
 		} // !c
@@ -152,11 +162,10 @@ $('form').submit(function(){
 	// scroll to bottom
 	$("#messages").scrollTop($("#messages")[0].scrollHeight);
 	$("#newmsg").animate({bottom: "0px"}, "fast");
-
 	// reset box
 	$('#m').val('');
 	return false;
-});
+};
 
 
 
@@ -274,10 +283,8 @@ function isEnabled(id){
 }
 
 $("#messages").scroll(function(){
-	console.log($("#messages")[0].scrollHeight + " : " + ($(window).height()-50) + " : " + $("#messages").outerHeight());
 	if($("#messages")[0].scrollHeight - $("#messages").scrollTop() - $("#messages").outerHeight() < 1){
 		$("#newmsg").animate({bottom: "0px"}, "fast");
-		console.log("success!")
 	}
 });
 
@@ -296,9 +303,10 @@ function scroll(offset){
 var entityMap = {"&": "&amp;","<": "&lt;",">": "&gt;",'"': '&quot;',"'": '&#39;',"/": '&#x2F;'};
 
 function fix(string) {
-	return String(string).replace(/[&<>"'\/]/g, function (s) {
+	var str = String(string).replace(/[&<>"'\/]/g, function (s) {
 		return entityMap[s];
 	});
+	return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
 }
 
 // manage colour

@@ -290,7 +290,7 @@ body {
 	color: grey;
 } 
 
-form input {
+#input textarea {
 	box-sizing: border-box;
 	position: relative;
 	padding: 10px;
@@ -299,6 +299,7 @@ form input {
 	background-color: hsl(280, 100%, 95%);
 	width: calc(100% - 75px);
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
+	resize: none;
 }
 
 form button {
