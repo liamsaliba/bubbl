@@ -154,7 +154,7 @@ $('form').submit(function(){
 	else
 		send_msg(m);
 	
-	window.scrollBy(0, 200000);
+	$("#messages").scrollTop($("#messages")[0].scrollHeight);
 
 	// reset box
 	$('#m').val('');
@@ -278,8 +278,12 @@ function isEnabled(id){
 
 // Autoscroll
 function scroll(offset){
+	var msg = $("#messages");
+	console.log($("#messages").scrollTop());
+
+
 	if((window.innerHeight < document.body.offsetHeight) && ((window.innerHeight + window.scrollY) === offset) || window.scrollY === 0)
-		window.scrollBy(0, 20000);
+		$("#messages").scrollTop($("#messages").scrollHeight);
 }
 
 // for fix string
