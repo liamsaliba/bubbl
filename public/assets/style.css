@@ -15,10 +15,6 @@
   user-select: none;
 }
 
-body {
-	width: 100vw;
-}
-
 ::selection .highlight {
 	background-color: hsla(280, 100%, 60%, 0.7);
 }

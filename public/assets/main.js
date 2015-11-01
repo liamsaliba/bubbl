@@ -35,9 +35,9 @@ $(window).focus(function(){
 // logo click menu
 $('#logo').click(function(){
 	$('#logo').animate({height: '30px'}, "fast");
-	if($('#float-panel').css('display') === 'none')
+	if($('#float-panel').css('display') === 'none'){
 		$('#float-panel').stop(true, true).fadeIn({ duration: 400, queue: false }).css('display', 'none').slideDown(400);
-	else
+	} else
     	$('#float-panel').stop(true, true).fadeOut({ duration: 400, queue: false }).slideUp(400);
     $('#logo').animate({height: '35px'}, "fast");
 });
@@ -176,12 +176,18 @@ socket.on('chat message', function(data){
 socket.on('update names', function(data){
 	$('#users').empty();
 	$('#users').append($('<li class="user">').html(username + "  <span class=\"online\">&#9679;</span>"));
+	$("#users li:last").click(function() {
+		$("textarea").val($("textarea").val()+ "@" + username + " ");
+	});
 	for(var key in data.usernames){
 		if(data.usernames[key].username !== username){
 			if(data.usernames[key].status === "online")
 				$('#users').append($('<li>').html(data.usernames[key].username + "  <span class=\"online\">&#9679;</span>"));
 			else if(data.usernames[key].status === "away")
 				$('#users').append($('<li>').html(data.usernames[key].username + "  <span class=\"away\">&#9679;</span>"));
+			$("#users li:last").click(function() {
+				$("textarea").val($("textarea").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
+			});
 		}
 	}
 	$('#online-count').html(data.numUsers + " online");
@@ -226,7 +232,7 @@ function msg(id, m){
 // replies
 function msgm(m, user, hue){
 	var offset = $("#messages")[0].scrollHeight;
-	if (~m.indexOf(username)){
+	if (~m.indexOf("@"+username)){
 		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)));
 		if(prev_msg_username === user)
 			$(".i:last, .u:last").addClass("same");
@@ -246,7 +252,7 @@ function msgm(m, user, hue){
 	scroll(offset);
 	$(".u:last").click(function() {
 		console.log('tet')
-		$("textarea").val($("textarea").val()+$(this).text());
+		$("textarea").val($("textarea").val() + '@' +$(this).text());
 	});
 }
 
@@ -265,8 +271,7 @@ function send_msg(m){
 		msg('n e', "do not use invalid characters.")
 
 	$(".u:last").click(function() {
-		console.log('tet')
-		$("textarea").val($("textarea").val()+$(this).text());
+		$("textarea").val($("textarea").val()+"@" + $(this).text());
 	});	
 }
 
