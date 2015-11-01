@@ -42,13 +42,10 @@ $('#logo').click(function(){
     $('#logo').animate({height: '35px'}, "fast");
 });
 
-// TODO: make this work.  (Append username to text box)
-$('.u').click(function(){
-	$("form input").append($(this).text());
-});
 
 //		<span id="change_tip">change username -></span>
 
+// set new username when click on username box
 $('#float-username').click(function(){
 	$('#float-username').animate({right: 0}, "slow");
 	$('#users li:contains(' + username + ')').remove();
@@ -56,6 +53,7 @@ $('#float-username').click(function(){
 	socket.emit("join");
 });
 
+// expanding text area, shift-enter
 $("textarea").keydown(function(e){
     // Enter was pressed without shift key
     if (e.keyCode == 13 && !e.shiftKey)
@@ -162,9 +160,10 @@ function parseChatBox(){
 	// scroll to bottom
 	$("#messages").scrollTop($("#messages")[0].scrollHeight);
 	$("#newmsg").animate({bottom: "0px"}, "fast");
+
 	// reset box
 	$('#m').val('');
-	return false;
+	return false; //IMPORTANT
 };
 
 
@@ -206,9 +205,9 @@ socket.on('fr', function(){
 
 socket.on('setname', function(m){
 	username = m;
-	$('#float-username').animate({right: '130px'}, "slow");
-	$('#float-username').html(username);
+	setTimeout("$('#float-username').html(username);", 400);
 	document.title = 'bubbl. ' + username;
+	$('#float-username').animate({right: '130px'}, "slow");
 });
 
 // message into client
@@ -228,13 +227,13 @@ function msg(id, m){
 function msgm(m, user, hue){
 	var offset = $("#messages")[0].scrollHeight;
 	if (~m.indexOf(username)){
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible">: </span>')).append($('<div class="i">').html(m)));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)));
 		if(prev_msg_username === user)
 			$(".i:last, .u:last").addClass("same");
 		$('.i:last').css("background-color", colours.eighty).css("color", idealTextColor(colours.eighty)).fadeIn(300);
 	}
 	else {
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible">: </span>')).append($('<div class="m">').html(m)));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(m)));
 		if(prev_msg_username === user)
 			$(".m:last, .u:last").addClass("same");
 		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 95%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
@@ -245,13 +244,17 @@ function msgm(m, user, hue){
 	prev_msg_username = user;
 
 	scroll(offset);
+	$(".u:last").click(function() {
+		console.log('tet')
+		$("textarea").val($("textarea").val()+$(this).text());
+	});
 }
 
 // message to server
 function send_msg(m){
 	if (is_legal(m)) {
 		socket.emit('chat message', m);
-		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible">: </span>')).append($('<div class="o">').html(m)))
+		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(m)))
 		if(prev_msg_username === username)
 			$(".u:last, .o:last").addClass("same");
 		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
@@ -259,7 +262,12 @@ function send_msg(m){
 		prev_msg_username = username;
 	}
 	else 
-		msg('n e', "do not use invalid characters.")			
+		msg('n e', "do not use invalid characters.")
+
+	$(".u:last").click(function() {
+		console.log('tet')
+		$("textarea").val($("textarea").val()+$(this).text());
+	});	
 }
 
 // TODO: spam protection in this.
