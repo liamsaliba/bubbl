@@ -32,11 +32,15 @@ $(window).focus(function(){
   	socket.emit('back');
 });
 
-$('#change-tip').animate({opacity: 1}, "slow");
+$('#change-tip').animate({right: 140}, 800);
+$('#menu-tip').animate({right: 40}, 800);
+setTimeout("$('#change-tip').animate({right: -140}, 800);", 10000);
+setTimeout("$('#menu-tip').animate({right: -140}, 800);", 10000);
 
 // logo click menu
 $('#logo').click(function(){
 	$('#logo').animate({height: '30px'}, "fast");
+	 $('#menu-tip').animate({opacity: 0}, 800);
 	if($('#float-panel').css('display') === 'none'){
 		$('#float-panel').stop(true, true).fadeIn({ duration: 400, queue: false }).css('display', 'none').slideDown(400);
 	} else
@@ -178,7 +182,7 @@ function parseChatBox(){
 
 	// reset box
 	$('#m').val('');
-	$("#textinput").focus();
+	$("#input textarea").focus();
 };
 
 
@@ -193,6 +197,7 @@ socket.on('update names', function(data){
 	$('#users').append($('<li class="user">').html(username + "  <span class=\"online\">&#9679;</span>"));
 	$("#users li:last").click(function() {
 		$("textarea").val($("textarea").val()+ "@" + username + " ");
+		$("#input textarea").focus();
 	});
 	for(var key in data.usernames){
 		if(data.usernames[key].username !== username){
@@ -202,6 +207,7 @@ socket.on('update names', function(data){
 				$('#users').append($('<li>').html(data.usernames[key].username + "  <span class=\"away\">&#9679;</span>"));
 			$("#users li:last").click(function() {
 				$("textarea").val($("textarea").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
+				$("#input textarea").focus();
 			});
 		}
 	}
@@ -212,6 +218,10 @@ socket.on('join', function(data){
 	msg('n j', data.username + " joined " + bubbl);
 	$('#users').append($('<li>').html(data.username + "  <span class=\"online\">&#9679;</span>"));
 	$('#online-count').html(data.numUsers + " online");
+	$("#users li:last").click(function() {
+		$("textarea").val($("textarea").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
+		$("#input textarea").focus();
+	});
 });
 
 socket.on('leave', function(data){
@@ -266,8 +276,8 @@ function msgm(m, user, hue){
 
 	scroll(offset);
 	$(".u:last").click(function() {
-		console.log('tet')
 		$("textarea").val($("textarea").val() + '@' +$(this).text());
+		$("#input textarea").focus();
 	});
 }
 
@@ -292,6 +302,7 @@ function send_msg(m){
 
 	$(".u:last").click(function() {
 		$("textarea").val($("textarea").val()+"@" + $(this).text());
+		$("#input textarea").focus();
 	});	
 }
 
