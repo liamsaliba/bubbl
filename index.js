@@ -17,14 +17,17 @@ var users_connected = 0;
 io.on('connection', function(socket){  // listening socket
 
 	// if user has a username and is in the chat room.
-	var userJoined = false;
+	//var userJoined = false;
 
 	// emit chat message with username and message to other clients
 	socket.on('chat message', function(data){
+		socket.lastMessageSent = new Date();
 		socket.broadcast.emit('chat message', {
 			username: socket.username,
 			colour: socket.colour,
-			message: data
+			usercolour: socket.usercolour,
+			message: data,
+			time: socket.lastMessageSent
 		});
 	});
 
@@ -32,11 +35,11 @@ io.on('connection', function(socket){  // listening socket
 		if(typeof usernames[socket.id] !== "")
 		socket.username = genUser(); //store username in socket session for client
 		socket.colour = 280;
-		usernames[socket.id] = {username: socket.username, colour: socket.colour, status: "online"}; // store username in temporary db
-		print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		usernames[socket.id] = {username: socket.username, colour: socket.colour, time: new Date()}; // store username in temporary db
+		//print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 		++users_connected;
 
-		userJoined = true;
+		//userJoined = true;
 
 		io.to(socket.id).emit("setname", socket.username)
 		io.to(socket.id).emit("update names", {
@@ -51,8 +54,8 @@ io.on('connection', function(socket){  // listening socket
 	});
 
 	socket.on('leave', function(){
-		print("- " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
-		if(userJoined){
+		//print("- " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		//if(userJoined){
 			delete usernames[socket.id]
 
 			--users_connected;
@@ -61,7 +64,12 @@ io.on('connection', function(socket){  // listening socket
 				username: socket.username,
 				numUsers: users_connected
 			});
-		}
+		//}
+	});
+
+	socket.on('rejoin', function(){
+		socket.prevName = socket.username;
+		//print("* " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 	});
 
 	// force refresh
@@ -80,7 +88,7 @@ io.on('connection', function(socket){  // listening socket
 	socket.on('change colour', function(colour) {
 		socket.colour = colour;
 		usernames[socket.id].colour = colour;
-		print("! " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		//print("! " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 	});
 
 	socket.on('typing', function(msg){

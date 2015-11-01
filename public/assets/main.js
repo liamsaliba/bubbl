@@ -43,11 +43,14 @@ $('#logo').click(function(){
 });
 
 
-//		<span id="change_tip">change username -></span>
+// tooltip
+$(document).ready(function(){
+});
 
 // set new username when click on username box
 $('#float-username').click(function(){
 	$('#float-username').animate({right: 0}, "slow");
+	$('#change-tip').animate({opacity: 0}, "fast");
 	$('#users li:contains(' + username + ')').remove();
 	socket.emit("leave");
 	socket.emit("join");
@@ -56,8 +59,7 @@ $('#float-username').click(function(){
 // expanding text area, shift-enter
 $("textarea").keydown(function(e){
     // Enter was pressed without shift key
-    if (e.keyCode == 13 && !e.shiftKey)
-    {
+    if (e.keyCode == 13 && !e.shiftKey) {
         // prevent default behavior
         e.preventDefault();
         $('form').submit();
@@ -213,7 +215,7 @@ socket.on('setname', function(m){
 	username = m;
 	setTimeout("$('#float-username').html(username);", 400);
 	document.title = 'bubbl. ' + username;
-	$('#float-username').animate({right: '130px'}, "slow");
+	$('#float-username').animate({right: '130px'}, "slow");;
 });
 
 // message into client

@@ -43,7 +43,7 @@
 #float-username {
 	position: fixed;
 	height: 30px;
-	right: 130px;
+	right: -100px;
 	padding: 5px;
 	padding-right: 8px;
 	padding-left: 12px;
@@ -56,6 +56,14 @@
 	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+}
+
+#change-tip {
+	position: fixed;
+	top: 5px;
+	right: 240px;
+	z-index: 100;
+	color: darkgrey;
 }
 
 .disable-selection {
