@@ -25,7 +25,6 @@ io.on('connection', function(socket){  // listening socket
 		socket.broadcast.emit('chat message', {
 			username: socket.username,
 			colour: socket.colour,
-			usercolour: socket.usercolour,
 			message: data,
 			time: socket.lastMessageSent
 		});

@@ -321,7 +321,9 @@ function fix(string) {
 	var str = String(string).replace(/[&<>"'\/]/g, function (s) {
 		return entityMap[s];
 	});
-	return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
+	str = str.replace(/(?:\r\n|\r|\n)/g, '<br />');
+	// rich text
+	return str;
 }
 
 // manage colour
