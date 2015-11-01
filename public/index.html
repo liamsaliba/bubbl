@@ -6,24 +6,28 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<!--CSS-->
-		<link rel="stylesheet" type="text/css" href="/assets/style.css">
-
+		<link rel="stylesheet" type="text/css" href="/css/style.css">
+		
+		<!-- Emoji Picker -->
+		<link rel="stylesheet" type="text/css" href="css/jquery.emojipicker.css">
+		<link rel="stylesheet" type="text/css" href="css/jquery.emojipicker.g.css">
+		
+		
 		<!--Fonts-->
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
-		<!--link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet"-->
 
-		<link rel="icon" type="image/png" href="/assets/favicon-16x16.png" sizes="16x16">
-		<link rel="icon" type="image/png" href="/assets/favicon-32x32.png" sizes="32x32">
-		<link rel="icon" type="image/png" href="/assets/favicon-64x64.png" sizes="64x64">
+		<link rel="icon" type="image/png" href="/assets/i/favicon-16x16.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="/assets/i/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/assets/i/favicon-64x64.png" sizes="64x64">
 	</head>
 	<body>
 		<div id="float-logo">
-			<img id="logo" src="/assets/bubbl.png" height="35px">
+			<img id="logo" src="/assets/i/bubbl.png" height="35px">
 		</div>
 		<div id="float-username"></div>
-		<span id="change-tip">change username -></span>
+		<span id="change-tip">change username &#11023;</span>
 		<div id="float-panel">
-			<p class="version">bubbl 0.015c (2015-11-1a)</span>
+			<p class="version">bubbl 0.016a (2015-11-1c)</span>
 			<h2 id="online-count"></h2>
 			<ul id="users"></ul>
 			<div id="settings"></div>
@@ -38,14 +42,16 @@
 		<div id="input">
 			<form action="">
 				<textarea id="m" autofocus autocomplete="off" placeholder="type a message here" rows="1"></textarea>
-				<button id="sendbtn">send</button>
+				<button id="sendbtn">></button>
 			</form>
 		</div>
 
 		<!--Scripts-->
 		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-		<script src="/assets/color2color.js"></script>
-		<script src="/assets/main.js"></script>
+		<script type="text/javascript" src="js/jquery.emojipicker.js"></script>
+		<script type="text/javascript" src="js/jquery.emojipicker.g.js"></script>
+		<script src="/js/color2color.js"></script>
+		<script src="/js/main.js"></script>
 	</body>
 </html>

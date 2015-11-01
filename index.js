@@ -13,11 +13,18 @@ app.use(express.static(__dirname + '/public'));
 var usernames = {};
 var users_connected = 0;
 
+var onStartup = true;
+
 // socket.io: user connection
 io.on('connection', function(socket){  // listening socket
 
 	// if user has a username and is in the chat room.
-	//var userJoined = false;
+	var userJoined = false;
+
+	if(onStartup){
+		io.emit('fr');
+		onStartup = false;
+	}
 
 	// emit chat message with username and message to other clients
 	socket.on('chat message', function(data){
@@ -34,11 +41,11 @@ io.on('connection', function(socket){  // listening socket
 		if(typeof usernames[socket.id] !== "")
 		socket.username = genUser(); //store username in socket session for client
 		socket.colour = 280;
-		usernames[socket.id] = {username: socket.username, colour: socket.colour, time: new Date()}; // store username in temporary db
-		//print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		usernames[socket.id] = {username: socket.username, colour: socket.colour, time: new Date(), status: "online"}; // store username in temporary db
+		print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 		++users_connected;
 
-		//userJoined = true;
+		userJoined = true;
 
 		io.to(socket.id).emit("setname", socket.username)
 		io.to(socket.id).emit("update names", {
@@ -53,8 +60,8 @@ io.on('connection', function(socket){  // listening socket
 	});
 
 	socket.on('leave', function(){
-		//print("- " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
-		//if(userJoined){
+		if(userJoined){
+			print("- " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 			delete usernames[socket.id]
 
 			--users_connected;
@@ -63,12 +70,12 @@ io.on('connection', function(socket){  // listening socket
 				username: socket.username,
 				numUsers: users_connected
 			});
-		//}
+		}
 	});
 
 	socket.on('rejoin', function(){
 		socket.prevName = socket.username;
-		//print("* " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		print("* " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 	});
 
 	// force refresh
@@ -87,7 +94,7 @@ io.on('connection', function(socket){  // listening socket
 	socket.on('change colour', function(colour) {
 		socket.colour = colour;
 		usernames[socket.id].colour = colour;
-		//print("! " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		print("! " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 	});
 
 	socket.on('typing', function(msg){
@@ -102,7 +109,7 @@ io.on('connection', function(socket){  // listening socket
 // HTTP server, listen for activity on port 3000
 http.listen(8080, function(){
 	print("Server initialised.")
-	print("Listening on *:80")
+	print("Listening on *:8080")
 });
 
 function print(str){

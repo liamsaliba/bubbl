@@ -7,10 +7,10 @@ var typing = false; //TODO
 var user_hue = 280;
 var username;
 var prev_msg_username; // used for '.same'
-var prev_msg; // to be used for spam protection
+var prev_msg = "."; // to be used for spam protection
 
 // bubbl logo
-var bubbl = "<object data=\"/assets/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
+var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
 
 var colours = {}; // these are defined in the colour section.
 
@@ -32,6 +32,8 @@ $(window).focus(function(){
   	socket.emit('back');
 });
 
+$('#change-tip').animate({opacity: 1}, "slow");
+
 // logo click menu
 $('#logo').click(function(){
 	$('#logo').animate({height: '30px'}, "fast");
@@ -43,8 +45,12 @@ $('#logo').click(function(){
 });
 
 
-// tooltip
+// on document load
 $(document).ready(function(){
+	 if(typeof window.orientation === "undefined"){
+	 	$("#sendbtn").text("☺");
+	 	$('#input textarea').attr("placeholder", "type a message here and press enter or shift-enter for a new line")
+	 }
 });
 
 // set new username when click on username box
@@ -62,14 +68,21 @@ $("textarea").keydown(function(e){
     if (e.keyCode == 13 && !e.shiftKey) {
         // prevent default behavior
         e.preventDefault();
-        $('form').submit();
+        parseChatBox();
     }
 });
 
 // Chat box parsing
-$('form').submit(function(){
-	return parseChatBox();
+$('#sendbtn').click(function(){
+	if(typeof window.orientation !== "undefined")
+		parseChatBox();
+
 });
+
+$('#input').submit(function(){
+		return false;
+});
+
 function parseChatBox(){
 	// remove white space, make html safe.
 	var m = fix($('#m').val().trim());
@@ -165,7 +178,7 @@ function parseChatBox(){
 
 	// reset box
 	$('#m').val('');
-	return false; //IMPORTANT
+	$("#textinput").focus();
 };
 
 
@@ -260,7 +273,7 @@ function msgm(m, user, hue){
 
 // message to server
 function send_msg(m){
-	if (is_legal(m)) {
+	if (is_legal(m) === 0) {
 		socket.emit('chat message', m);
 		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(m)))
 		if(prev_msg_username === username)
@@ -268,9 +281,14 @@ function send_msg(m){
 		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
 		$('.u:last').fadeIn(300);
 		prev_msg_username = username;
+		prev_msg = m;
 	}
-	else 
-		msg('n e', "do not use invalid characters.")
+	else if (is_legal(m) === 1)
+		msg('n e', "you need to type something to say something");
+	else if (is_legal(m) === 2)
+		msg('n e', "you already said that");
+	else if (is_legal(m) === 3)
+		msg('n e', "you already said that, cheeky.")
 
 	$(".u:last").click(function() {
 		$("textarea").val($("textarea").val()+"@" + $(this).text());
@@ -279,10 +297,16 @@ function send_msg(m){
 
 // TODO: spam protection in this.
 function is_legal(m){
-	if (m === "") // if nothing entered
-		return false;
+	if (m === prev_msg) // if nothing entered
+		return 2;
+	else if (m === "")
+		return 1;
+	else if (m.split(" ") === prev_msg.split(" ")){
+		console.log()
+		return 3;
+	}
 	else
-		return true;
+		return 0;
 }
 
 // TODO: make this a setting in menu... enables / disables certain messages
@@ -344,9 +368,8 @@ function change_color(hue, silent){
 		twenty: "hsl(" + (user_hue) + ", 100%, 20%)"
 	};
 
-	$("form input").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
-	$("::selection, form button:hover").css({"background-color": colours.sixty}); //60
-	$("#float-logo, form button").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //50
+	$("#input textarea").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
+	$("#float-logo, #sendbtn").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //50
 	$("#float-panel").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fortyf)}); //45
 	$("#float-username").css({"background-color": colours.fortyf, "color": idealTextColor(colours.forty)}); //40
 	$("#input").css({"background-color": colours.twenty, "color": idealTextColor(colours.twenty)}); //20
@@ -356,9 +379,9 @@ function change_color(hue, silent){
 
 	// Logo colour
 	if($("#float-logo").css("color") === "rgb(245, 245, 245)")
-		$("#logo").attr('src', "/assets/bubbl.png")
+		$("#logo").attr('src', "/assets/i/bubbl.png")
 	else
-		$("#logo").attr('src', "/assets/bubbl_b.png")
+		$("#logo").attr('src', "/assets/i/bubbl_b.png")
 
 	socket.emit('change colour', user_hue);
 }

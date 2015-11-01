@@ -60,10 +60,11 @@
 
 #change-tip {
 	position: fixed;
-	top: 5px;
-	right: 240px;
+	top: 32px;
+	right: 150px;
 	z-index: 100;
 	color: darkgrey;
+	opacity: 0;
 }
 
 .disable-selection {
@@ -301,31 +302,30 @@
 	border-radius: 10px;
 	border: none;
 	background-color: hsl(280, 100%, 95%);
-	width: calc(100% - 75px);
+	width: calc(100% - 45px);
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
 	resize: none;
 }
 
-form button {
+#sendbtn {
 	border-radius: 20px;
 	border: none;
-	font-size: 18px;
+	font-size: 22px;
 	height: 37px;
-	width: 70px;
-	padding: 5px 15px;
-	padding-top: 4px;
-	padding-bottom: 6px;
+	width: 40px;
 	margin-left: 5px;
 	background-color: hsl(280, 100%, 50%);
 	float: right;
 	color: white;
+	padding-bottom: 2px;
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
 }
 
-form button:hover {
-	background-color: hsl(280, 100%, 60%);
+#sendbtn:hover {
+	background-color: black;
 }
 
-form button:active {
-	font-size: 15px !important;
+#sendbtn:active {
+	background: rgba(255, 255, 255, 0.4) !important;
+	font-size: 20px !important;
 }
