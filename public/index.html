@@ -31,10 +31,10 @@
 			<img id="logo" src="/assets/i/bubbl.png" height="35px">
 		</div>
 		<div id="float-username"></div>
-		<span id="change-tip">change username &#10548;</br>in a minute</span>
+		<span id="change-tip">change username? &#10548;</span>
 		<span id="menu-tip">open menu &#10548;</span>
 		<div id="float-panel">
-			<p class="version">bubbl 0.018 (2015-11-2a)</span>
+			<p class="version">bubbl 0.1.020 (2015-11-2c)</span>
 			<h2 id="online-count"></h2>
 			<ul id="users"></ul>
 			<div id="settings"></div>
@@ -51,6 +51,19 @@
 				<textarea id="m" autofocus autocomplete="off" placeholder="type a message here" rows="1"></textarea>
 				<button id="sendbtn">></button>
 			</form>
+		</div>
+
+		<div id="modal">
+			<div id="disconnect">
+				<h2>oh snap.</h2>
+				something bad happened and we're trying to fix it.  just wait a moment to rejoin (time for a new name)
+				<button class="rejoin">rejoin</button>
+			</div>
+			<div id="inactive">
+				<h2>welcome back</h2>
+				you've been away for while.  time for a new name
+				<button class="rejoin">rejoin</button>
+			</div>
 		</div>
 
 		<!--Scripts-->

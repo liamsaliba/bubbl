@@ -29,7 +29,7 @@
 	padding: 7px;
 	background-color: hsl(280, 100%, 50%);
 	padding-top: 8px;
-	z-index: 1000;
+	z-index: 10;
 	vertical-align: center;
 
 	-webkit-border-bottom-left-radius: 10px;
@@ -291,7 +291,6 @@
 }
 
 
-
 /* input section */
 #input {
 	position: fixed;
@@ -344,4 +343,39 @@
 .emojiPicker {
 	top: calc(100% - 305px) !important;
 	left: calc(100% - 265px) !important; 
+}
+
+
+
+/* OVERLAY MESSAGES */
+#modal {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.9);
+	z-index: 1000;
+	display: none;
+}
+
+#disconnect, #inactive {
+	position: fixed;
+	background: lightgray;
+	border-radius: 10px;
+	padding: 10px;
+	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
+	bottom: -150px;
+	margin: 15px;
+}
+
+.rejoin {
+	position: fixed;
+	margin-top: 20px;
+	font-size: 22px;
+	border-radius: 15px;
+	padding: 10px;
+	background: white;
+	color: black;
+	border: none;
+	left: -100px;
+	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
 }

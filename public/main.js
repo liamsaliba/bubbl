@@ -26,18 +26,25 @@ else
 // send leave receipt to server
 window.onbeforeunload = function() { 
 	socket.emit('leave');
-} 
+}
 
-// TODO
-$(window).blur(function(){
-	socket.emit('away');
-});
-$(window).focus(function(){
-  	socket.emit('back');
+// on document load
+$(document).ready(function(){
+	 if(typeof window.orientation === "undefined"){ //detect mobile
+	 	$("#sendbtn").text("☺");
+	 	$('#m').attr("placeholder", "type a message here and press enter")
+	 	$('#m').emojiPicker({
+			width: '260px',
+			height: '250px',
+			button: false,
+			position: 'top'
+		});
+	 }
 });
 
-$('#change-tip').animate({right: 140}, 800);
-$('#menu-tip').animate({right: 40}, 800);
+// tips
+setTimeout("$('#change-tip').animate({right: 140}, 800);", 500);
+setTimeout("$('#menu-tip').animate({right: 40}, 800);", 500);
 setTimeout("$('#change-tip').animate({right: -140}, 800);", 10000);
 setTimeout("$('#menu-tip').animate({right: -140}, 800);", 10000);
 
@@ -52,25 +59,11 @@ $('#logo').click(function(){
     $('#logo').animate({height: '35px'}, "fast");
 });
 
-
-// on document load
-$(document).ready(function(){
-	 if(typeof window.orientation === "undefined"){
-	 	$("#sendbtn").text("☺");
-	 	$('#m').attr("placeholder", "type a message here and press enter or shift-enter for a new line")
-	 	$('#m').emojiPicker({
-			width: '260px',
-			height: '250px',
-			button: false,
-			position: 'top'
-		});
-	 }
-});
-
 // set new username when click on username box
 $('#float-username').click(function(){
 	socket.emit("rejoin");
-	$('#change-tip').animate({opacity: 0}, "fast");
+	$('#change-tip').fadeOut();
+	$("#float-username").css({"background-color": colours.forty, "color": idealTextColor(colours.forty)}); //40
 });
 
 // expanding text area, shift-enter
@@ -92,6 +85,7 @@ $('#sendbtn').click(function(){
 	}
 });
 
+// button does nothing
 $('#input').submit(function(){
 		return false;
 });
@@ -172,7 +166,7 @@ function parseChatBox(){
 						break;
 			}
 			
-		}
+		} //force refresh
 		else if (m.substring(1,3) === "fr"){
 			socket.emit('fr');
 		}
@@ -228,6 +222,40 @@ socket.on('setname', function(data){
 		msg('n e', "you need to wait a minute to change your username")
 	}
 });
+
+// Disconnect error boxes
+socket.on('disconnect', function(){
+	$("#inactive").animate({bottom: "-150px"}, "fast");
+	$("#modal").fadeIn();
+	$("#disconnect").animate({bottom: "50px"}, "fast");
+	socket.on('connect', function(){
+		$(".rejoin").animate({left: "15px"}, "fast");
+	})
+});
+
+// away error box
+socket.on("inactive", function(){
+	$("#modal").fadeIn();
+	$("#inactive").animate({bottom: "50px"}, "fast");
+	$(".rejoin").animate({left: "15px"}, "fast");
+})
+
+$(".rejoin").click(function(){
+	$("#modal").fadeOut();
+	$("#disconnect, #inactive").animate({bottom: "-150px"}, "fast");
+	$(".rejoin").animate({left: "-100px"}, "fast");
+	socket.emit("join");
+	change_color(user_hue);
+});
+
+
+// when username change is available, change bg colour
+socket.on("change available", function(){
+	$("#float-username").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //40
+	setTimeout("$('#change-tip').animate({right: 140}, 800);", 500);
+	$('#change-tip').fadeIn();
+})
+
 
 // message into client
 function msg(id, m){	  			
@@ -370,7 +398,7 @@ function change_color(hue, silent){
 	$("#input #m").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
 	$("#float-logo, #sendbtn").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //50
 	$("#float-panel").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fortyf)}); //45
-	$("#float-username").css({"background-color": colours.fortyf, "color": idealTextColor(colours.forty)}); //40
+	$("#float-username").css({"background-color": colours.forty, "color": idealTextColor(colours.forty)}); //40
 	$("#input").css({"background-color": colours.twenty, "color": idealTextColor(colours.twenty)}); //20
 
 	// Text colour
