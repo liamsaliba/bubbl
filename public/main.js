@@ -53,7 +53,13 @@ $('#logo').click(function(){
 $(document).ready(function(){
 	 if(typeof window.orientation === "undefined"){
 	 	$("#sendbtn").text("☺");
-	 	$('#input textarea').attr("placeholder", "type a message here and press enter or shift-enter for a new line")
+	 	$('#m').attr("placeholder", "type a message here and press enter or shift-enter for a new line")
+	 	$('#m').emojiPicker({
+			width: '260px',
+			height: '250px',
+			button: false,
+			position: 'top'
+		});
 	 }
 });
 
@@ -67,7 +73,7 @@ $('#float-username').click(function(){
 });
 
 // expanding text area, shift-enter
-$("textarea").keydown(function(e){
+$("#m").keydown(function(e){
     // Enter was pressed without shift key
     if (e.keyCode == 13 && !e.shiftKey) {
         // prevent default behavior
@@ -80,7 +86,9 @@ $("textarea").keydown(function(e){
 $('#sendbtn').click(function(){
 	if(typeof window.orientation !== "undefined")
 		parseChatBox();
-
+	else {
+		$("#m").emojiPicker('toggle');
+	}
 });
 
 $('#input').submit(function(){
@@ -182,7 +190,7 @@ function parseChatBox(){
 
 	// reset box
 	$('#m').val('');
-	$("#input textarea").focus();
+	$("#m").focus();
 };
 
 
@@ -196,8 +204,8 @@ socket.on('update names', function(data){
 	$('#users').empty();
 	$('#users').append($('<li class="user">').html(username + "  <span class=\"online\">&#9679;</span>"));
 	$("#users li:last").click(function() {
-		$("textarea").val($("textarea").val()+ "@" + username + " ");
-		$("#input textarea").focus();
+		$("#m").val($("#m").val()+ "@" + username + " ");
+		$("#input #m").focus();
 	});
 	for(var key in data.usernames){
 		if(data.usernames[key].username !== username){
@@ -206,8 +214,8 @@ socket.on('update names', function(data){
 			else if(data.usernames[key].status === "away")
 				$('#users').append($('<li>').html(data.usernames[key].username + "  <span class=\"away\">&#9679;</span>"));
 			$("#users li:last").click(function() {
-				$("textarea").val($("textarea").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
-				$("#input textarea").focus();
+				$("#m").val($("#m").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
+				$("#input #m").focus();
 			});
 		}
 	}
@@ -219,8 +227,8 @@ socket.on('join', function(data){
 	$('#users').append($('<li>').html(data.username + "  <span class=\"online\">&#9679;</span>"));
 	$('#online-count').html(data.numUsers + " online");
 	$("#users li:last").click(function() {
-		$("textarea").val($("textarea").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
-		$("#input textarea").focus();
+		$("#m").val($("#m").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
+		$("#input #m").focus();
 	});
 });
 
@@ -276,8 +284,8 @@ function msgm(m, user, hue){
 
 	scroll(offset);
 	$(".u:last").click(function() {
-		$("textarea").val($("textarea").val() + '@' +$(this).text());
-		$("#input textarea").focus();
+		$("#m").val($("#m").val() + '@' +$(this).text());
+		$("#input #m").focus();
 	});
 }
 
@@ -301,8 +309,8 @@ function send_msg(m){
 		msg('n e', "you already said that, cheeky.")
 
 	$(".u:last").click(function() {
-		$("textarea").val($("textarea").val()+"@" + $(this).text());
-		$("#input textarea").focus();
+		$("#m").val($("#m").val()+"@" + $(this).text());
+		$("#input #m").focus();
 	});	
 }
 
@@ -379,7 +387,7 @@ function change_color(hue, silent){
 		twenty: "hsl(" + (user_hue) + ", 100%, 20%)"
 	};
 
-	$("#input textarea").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
+	$("#input #m").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
 	$("#float-logo, #sendbtn").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //50
 	$("#float-panel").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fortyf)}); //45
 	$("#float-username").css({"background-color": colours.fortyf, "color": idealTextColor(colours.forty)}); //40

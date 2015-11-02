@@ -336,3 +336,8 @@
 	background: rgba(255, 255, 255, 0.4) !important;
 	font-size: 20px !important;
 }
+
+.emojiPicker {
+	top: calc(100% - 305px) !important;
+	left: calc(100% - 265px) !important; 
+}
