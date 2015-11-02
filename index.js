@@ -11,7 +11,7 @@ app.use(express.static(__dirname + '/public'));
 
 // holds usernames
 var usernames = {};
-var users_connected = 0;
+var users_active = 0;
 
 var onStartup = true;
 
@@ -28,34 +28,36 @@ io.on('connection', function(socket){  // listening socket
 
 	// emit chat message with username and message to other clients
 	socket.on('chat message', function(data){
-		socket.lastMessageSent = new Date();
+		socket.lastActive = new Date();
 		socket.broadcast.emit('chat message', {
 			username: socket.username,
 			colour: socket.colour,
 			message: data,
-			time: socket.lastMessageSent
+			time: socket.lastActive
 		});
+
 	});
 
 	socket.on('join', function(){
-		if(typeof usernames[socket.id] !== "")
 		socket.username = genUser(); //store username in socket session for client
 		socket.colour = 280;
-		usernames[socket.id] = {username: socket.username, colour: socket.colour, time: new Date(), status: "online"}; // store username in temporary db
+		socket.lastActive = new Date();
+		socket.active = true;
+		usernames[socket.id] = {username: socket.username, colour: socket.colour, timeJoined: socket.lastActive, active: socket.active}; // store username in temporary db
 		print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
-		++users_connected;
+		++users_active;
 
 		userJoined = true;
 
-		io.to(socket.id).emit("setname", socket.username)
-		io.to(socket.id).emit("update names", {
-			usernames: usernames,
-			numUsers: users_connected
+		io.to(socket.id).emit("setname", {
+			username: socket.username,
+			numUsers: users_active,
+			success: true
 		});
 
 		socket.broadcast.emit('join', {
 			username: socket.username,
-			numUsers: users_connected
+			numUsers: users_active
 		});
 	});
 
@@ -64,31 +66,52 @@ io.on('connection', function(socket){  // listening socket
 			print("- " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 			delete usernames[socket.id]
 
-			--users_connected;
+			--users_active;
 
 			socket.broadcast.emit('leave', {
 				username: socket.username,
-				numUsers: users_connected
+				numUsers: users_active
 			});
 		}
 	});
 
 	socket.on('rejoin', function(){
-		socket.prevName = socket.username;
-		print("* " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		print("* " + socket.id + " : " + usernames[socket.id].username + " : t" + Math.floor((new Date() - usernames[socket.id].timeJoined) / 60000));
+		if (Math.floor((new Date() - usernames[socket.id].timeJoined) / 60000) > 0) {
+			socket.prevUsername = socket.username;
+			socket.username = genUser();
+
+			usernames[socket.id].username = socket.username;
+			usernames[socket.id].timeJoined = new Date();
+
+			socket.broadcast.emit('leave', {
+				username: socket.prevUsername,
+				numUsers: users_active
+			});
+			socket.broadcast.emit('join', {
+				username: socket.username,
+				numUsers: users_active
+			});
+
+			io.to(socket.id).emit("setname", {
+				username: socket.username,
+				numUsers: users_active,
+				success: true
+			});
+			print("* " + socket.id + " : " + socket.prevUsername + " -> " + usernames[socket.id].username);
+		}
+		else {
+			io.to(socket.id).emit("setname", {
+				username: socket.username,
+				numUsers: users_active,
+				success: false
+			});
+		}
 	});
 
 	// force refresh
 	socket.on('fr', function(){
 		io.emit('fr');
-	});
-
-	socket.on('away', function(){
-		socket.broadcast.emit('away', socket.username);
-	});
-
-	socket.on('back', function(){
-		socket.broadcast.emit('back', socket.username);
 	});
 
 	socket.on('change colour', function(colour) {
@@ -120,10 +143,12 @@ function print(str){
 // generate username : TODO
 function genUser() {
 	var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var possible = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     var name = [];
-    for(var i = 0; i < (Math.ceil(Math.random()*6) + 4); i++)
-    	name.push(possible.charAt(Math.floor(Math.random() * possible.length)));
-
+    for(var i = 0; i <= 6; i++){
+		var ch = possible.charAt(Math.random() * possible.length);
+		if(ch !== " ")
+    		name.push(ch);
+    }
 	return name.join('');
 }

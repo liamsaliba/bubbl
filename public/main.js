@@ -8,6 +8,7 @@ var user_hue = 280;
 var username;
 var prev_msg_username; // used for '.same'
 var prev_msg = "."; // to be used for spam protection
+var room;
 
 // bubbl logo
 var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
@@ -17,7 +18,10 @@ var colours = {}; // these are defined in the colour section.
 // Talking TO server
 msg('n d', "you joined " + bubbl);
 
-change_color(280); // maybe use a cookie to change colour?
+if(getCookie("hue") !== "")
+	change_color(getCookie("hue")); // maybe use a cookie to change colour?
+else
+	change_color(280);
 
 // send leave receipt to server
 window.onbeforeunload = function() { 
@@ -65,11 +69,8 @@ $(document).ready(function(){
 
 // set new username when click on username box
 $('#float-username').click(function(){
-	$('#float-username').animate({right: 0}, "slow");
+	socket.emit("rejoin");
 	$('#change-tip').animate({opacity: 0}, "fast");
-	$('#users li:contains(' + username + ')').remove();
-	socket.emit("leave");
-	socket.emit("join");
 });
 
 // expanding text area, shift-enter
@@ -200,53 +201,32 @@ socket.on('chat message', function(data){
 	msgm(data.message, data.username, data.colour);
 });
 
-socket.on('update names', function(data){
-	$('#users').empty();
-	$('#users').append($('<li class="user">').html(username + "  <span class=\"online\">&#9679;</span>"));
-	$("#users li:last").click(function() {
-		$("#m").val($("#m").val()+ "@" + username + " ");
-		$("#input #m").focus();
-	});
-	for(var key in data.usernames){
-		if(data.usernames[key].username !== username){
-			if(data.usernames[key].status === "online")
-				$('#users').append($('<li>').html(data.usernames[key].username + "  <span class=\"online\">&#9679;</span>"));
-			else if(data.usernames[key].status === "away")
-				$('#users').append($('<li>').html(data.usernames[key].username + "  <span class=\"away\">&#9679;</span>"));
-			$("#users li:last").click(function() {
-				$("#m").val($("#m").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
-				$("#input #m").focus();
-			});
-		}
-	}
-	$('#online-count').html(data.numUsers + " online");
-});
-
 socket.on('join', function(data){
 	msg('n j', data.username + " joined " + bubbl);
-	$('#users').append($('<li>').html(data.username + "  <span class=\"online\">&#9679;</span>"));
-	$('#online-count').html(data.numUsers + " online");
-	$("#users li:last").click(function() {
-		$("#m").val($("#m").val()+ "@" + $(this).text().substring(0, $(this).text().length - 2));
-		$("#input #m").focus();
-	});
+	$('#online-count').html(data.numUsers + " active");
 });
 
 socket.on('leave', function(data){
 	msg('n l', data.username + " left " + bubbl);
-	$('#users li:contains(' + data.username + ')').remove();
-	$('#online-count').html(data.numUsers + " online");
+	$('#online-count').html(data.numUsers + " active");
 });
 
 socket.on('fr', function(){
 	location.reload(true);
 });
 
-socket.on('setname', function(m){
-	username = m;
-	setTimeout("$('#float-username').html(username);", 400);
-	document.title = 'bubbl. ' + username;
-	$('#float-username').animate({right: '130px'}, "slow");;
+socket.on('setname', function(data){
+	if(data.success){
+		username = data.username;
+		$('#float-username').animate({right: 0}, "slow");
+		setTimeout("$('#float-username').html(username);", 400);
+		document.title = 'bubbl. ' + username;
+		$('#float-username').animate({right: '130px'}, "slow");;
+		$('#online-count').html(data.numUsers + " active");
+	}
+	else {
+		msg('n e', "you need to wait a minute to change your username")
+	}
 });
 
 // message into client
@@ -269,13 +249,13 @@ function msgm(m, user, hue){
 		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)));
 		if(prev_msg_username === user)
 			$(".i:last, .u:last").addClass("same");
-		$('.i:last').css("background-color", colours.eighty).css("color", idealTextColor(colours.eighty)).fadeIn(300);
+		$('.i:last').css("background-color", colours.seventyf).css("color", idealTextColor(colours.eighty)).fadeIn(300);
 	}
 	else {
 		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(m)));
 		if(prev_msg_username === user)
 			$(".m:last, .u:last").addClass("same");
-		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 95%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
+		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 90%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
 	}
 
 	$('.u:last').fadeIn(300);
@@ -403,6 +383,7 @@ function change_color(hue, silent){
 		$("#logo").attr('src', "/assets/i/bubbl_b.png")
 
 	socket.emit('change colour', user_hue);
+	document.cookie=("hue=" + user_hue);
 }
 
 // text colour functions
@@ -426,4 +407,15 @@ function getRGBComponents(color) {
        G: parseInt(g, 16),
        B: parseInt(b, 16)
     };
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
 }

@@ -58,6 +58,10 @@
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 }
 
+.changable {
+	background-color: hsl(280, 100%, 60%) !important;
+}
+
 #change-tip {
 	position: fixed;
 	top: 32px;
@@ -126,13 +130,13 @@
 	list-style-type: none;
 }
 
-.away {
-	color: #FFCC00 !important;
+.red {
+	color: #FF0000 !important;
 	-webkit-text-stroke-width: 1px;
 	-webkit-text-stroke-color: lightgray;
 }
 
-.online {
+.green {
 	color: #009933 !important;
 	-webkit-text-stroke-width: 1px;
 	-webkit-text-stroke-color: lightgray;
@@ -241,7 +245,7 @@
 	padding: 2px;
 	clear: both !important;
 	color: black;
-	width: 90px;
+	width: 70px;
 	margin-right: 5px; 
 	text-align: right;
 	padding: 9px 0px !important;
