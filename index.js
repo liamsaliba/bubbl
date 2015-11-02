@@ -129,6 +129,8 @@ io.on('connection', function(socket){  // listening socket
 
 	function leave(id){
 		if(userJoined){
+			clearTimeout(socket.inactiveTimeout);
+			
 			print("- " + id);
 			delete usernames[id]
 

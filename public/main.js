@@ -226,6 +226,7 @@ socket.on('setname', function(data){
 // Disconnect error boxes
 socket.on('disconnect', function(){
 	$("#inactive").animate({bottom: "-150px"}, "fast");
+	$(".rejoin").animate({left: "-100px"}, "fast");
 	$("#modal").fadeIn();
 	$("#disconnect").animate({bottom: "50px"}, "fast");
 	socket.on('connect', function(){
