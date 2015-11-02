@@ -1,12 +1,17 @@
 <!doctype html>
 <html>
 	<head>
-		<title>bubbl. : bubbl.s for all anonymous</title>
+		<title>bubbl.</title>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<meta name="MobileOptimized" content="width" />
 		<meta name="HandheldFriendly" content="true" />
-		
+		<meta name="theme-color" content="#9900CC">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="manifest" href="/manifest.json">
 		<link rel="stylesheet" type="text/css" href="/style.css">
 		
 		<!-- Emoji Picker -->
@@ -17,14 +22,19 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<script src="ex/jquery.emojipicker.js"></script>
 		<script src="ex/jquery.emojipicker.g.js"></script>
-		<script src="/ex/color2color.js"></script>
+		<script src="ex/color2color.js"></script>
 		
 		<!--Fonts-->
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
 
-		<link rel="icon" type="image/png" href="/assets/i/favicon-16x16.png" sizes="16x16">
-		<link rel="icon" type="image/png" href="/assets/i/favicon-32x32.png" sizes="32x32">
-		<link rel="icon" type="image/png" href="/assets/i/favicon-64x64.png" sizes="64x64">
+		<link rel="icon" type="image/png" href="/assets/fav/16x16.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="/assets/fav/32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/assets/fav/64x64.png" sizes="64x64">
+		<link rel="icon" type="image/png" href="/assets/fav/android-chrome-192x192.png" sizes="192x192">
+		<link rel="icon" sizes="192x192" href="/assets/fav/android-chrome-192x192.png">
+		<link rel="icon" sizes="128x128" href="/assets/fav/128x128.png">
+		<link rel="apple-touch-icon" sizes="128x128" href="/assets/fav/128x128.png">
+		<link rel="apple-touch-icon-precomposed" sizes="128x128" href="/assets/fav/128x128.png">
 	</head>
 	<body>
 		<div id="float-logo">
@@ -60,7 +70,7 @@
 				<button class="rejoin">rejoin</button>
 			</div>
 			<div id="inactive">
-				<h2>welcome back</h2>
+				<h2>nice to see you again!</h2>
 				you've been away for while.  time for a new name
 				<button class="rejoin">rejoin</button>
 			</div>

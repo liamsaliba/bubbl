@@ -30,7 +30,6 @@ io.on('connection', function(socket){  // listening socket
 				username: socket.username,
 				colour: socket.colour,
 				message: data,
-				time: socket.lastActive
 			});
 		}
 	});
@@ -60,7 +59,7 @@ io.on('connection', function(socket){  // listening socket
 			numUsers: users_active,
 			success: true
 		});
-		if(userJoined)
+		if(firstJoin)
 			io.to(socket.id).emit("change available");
 	});
 
@@ -130,7 +129,7 @@ io.on('connection', function(socket){  // listening socket
 	function leave(id){
 		if(userJoined){
 			clearTimeout(socket.inactiveTimeout);
-			
+
 			print("- " + id);
 			delete usernames[id]
 
@@ -140,6 +139,8 @@ io.on('connection', function(socket){  // listening socket
 				username: socket.username,
 				numUsers: users_active
 			});
+
+			var firstJoin = true;
 
 			io.to(socket.id).emit("inactive");
 		}

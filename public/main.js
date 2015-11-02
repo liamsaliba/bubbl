@@ -111,55 +111,55 @@ function parseChatBox(){
 				case 'reset':
 				case 'default':
 					change_color(280);
-					msg('n d', "successfully changed your colour to purple");
+					//msg('n d', "successfully changed your colour to purple");
 					break;
 				case 'red':
 					change_color(0);
-					msg('n d', "successfully changed your colour to red");
+					//msg('n d', "successfully changed your colour to red");
 					break;
 				case 'orange':
 					change_color(25);
-					msg('n d', "successfully changed your colour to orange");
+					//msg('n d', "successfully changed your colour to orange");
 					break;
 				case 'gold':
 					change_color(45);
-					msg('n d', "successfully changed your colour to gold");
+					//msg('n d', "successfully changed your colour to gold");
 					break;
 				case 'yellow':
 					change_color(60);
-					msg('n d', "successfully changed your colour to yellow");
+					//msg('n d', "successfully changed your colour to yellow");
 					break;
 				case 'lime':
 					change_color(80);
-					msg('n d', "successfully changed your colour to lime");
+					//msg('n d', "successfully changed your colour to lime");
 					break;
 				case 'green':
 					change_color(100);
-					msg('n d', "successfully changed your colour to green");
+					//msg('n d', "successfully changed your colour to green");
 					break;
 				case 'turquoise':
 					change_color(150);
-					msg('n d', "successfully changed your colour to turquoise");
+					//msg('n d', "successfully changed your colour to turquoise");
 					break;
 				case 'aqua': 
 					change_color(175);
-					msg('n d', "successfully changed your colour to aqua");
+					//msg('n d', "successfully changed your colour to aqua");
 					break;
 				case 'sky':
 					change_color(200);
-					msg('n d', "successfully changed your colour to sky");
+					//msg('n d', "successfully changed your colour to sky");
 					break;
 				case 'blue':
 					change_color(240);
-					msg('n d', "successfully changed your colour to blue");
+					//msg('n d', "successfully changed your colour to blue");
 					break;
 				case 'magenta':
 					change_color(310);
-					msg('n d', "successfully changed your colour to magenta");
+					//msg('n d', "successfully changed your colour to magenta");
 					break;
 				case 'pink':
 					change_color(330);
-					msg('n d', "successfully changed your colour to pink");
+					//msg('n d', "successfully changed your colour to pink");
 					break;
 				default:
 					msg('n e', "invalid colour. try a number or colour name.");
@@ -274,27 +274,32 @@ function msg(id, m){
 // replies
 function msgm(m, user, hue){
 	var offset = $("#messages")[0].scrollHeight;
+	d = new Date();
+
 	if (~m.indexOf("@"+username)){
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)).append($('<div class="time">').html(d.getHours() + ":" + d.getMinutes())));
 		if(prev_msg_username === user)
 			$(".i:last, .u:last").addClass("same");
 		$('.i:last').css("background-color", colours.seventyf).css("color", idealTextColor(colours.eighty)).fadeIn(300);
 	}
 	else {
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(m)));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(m)).append($('<div class="time">').html(d.getHours() + ":" + d.getMinutes())));
 		if(prev_msg_username === user)
 			$(".m:last, .u:last").addClass("same");
 		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 90%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
 	}
 
 	$('.u:last').fadeIn(300);
-
 	prev_msg_username = user;
-
 	scroll(offset);
+
 	$(".u:last").click(function() {
 		$("#m").val($("#m").val() + '@' +$(this).text());
 		$("#input #m").focus();
+	});
+
+	$(".m:last").click(function() {
+		$('.time:last').fadeToggle(300);
 	});
 }
 
@@ -302,13 +307,24 @@ function msgm(m, user, hue){
 function send_msg(m){
 	if (is_legal(m) === 0) {
 		socket.emit('chat message', m);
-		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(m)))
+		d = new Date();
+		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(m)).append($('<div class="time">').html(d.getHours() + ":" + d.getMinutes())));
 		if(prev_msg_username === username)
 			$(".u:last, .o:last").addClass("same");
 		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
 		$('.u:last').fadeIn(300);
+
 		prev_msg_username = username;
 		prev_msg = m;
+
+		$(".u:last").click(function() {
+			$("#m").val($("#m").val()+"@" + $(this).text());
+			$("#input #m").focus();
+		});
+
+		$(".o:last").click(function() {
+			$('.time:last').fadeToggle(300);
+		});
 	}
 	else if (is_legal(m) === 1)
 		msg('n e', "you need to type something to say something");
@@ -316,11 +332,6 @@ function send_msg(m){
 		msg('n e', "you already said that");
 	else if (is_legal(m) === 3)
 		msg('n e', "you already said that, cheeky.")
-
-	$(".u:last").click(function() {
-		$("#m").val($("#m").val()+"@" + $(this).text());
-		$("#input #m").focus();
-	});	
 }
 
 // TODO: spam protection in this.
@@ -379,7 +390,7 @@ function fix(string) {
 }
 
 // manage colour
-function change_color(hue, silent){
+function change_color(hue){
 
 	user_hue = hue;
 
@@ -410,6 +421,9 @@ function change_color(hue, silent){
 		$("#logo").attr('src', "/assets/i/bubbl.png")
 	else
 		$("#logo").attr('src', "/assets/i/bubbl_b.png")
+
+	$('meta[name=theme-color]').remove();
+    $('head').append('<meta name="theme-color" content="' + color2color(colours.fifty, "hex") + '">' );
 
 	socket.emit('change colour', user_hue);
 	document.cookie=("hue=" + user_hue);
