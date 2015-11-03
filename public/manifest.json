@@ -1,5 +1,7 @@
 {
   "name": "bubbl",
+  "description": "bubbl.s for all [unknown]",
+  "version": "0.1",
   "icons": [
     {
       "src": "/assets/android/launcher-icon-0-75x.png",

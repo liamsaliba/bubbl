@@ -163,7 +163,7 @@ io.on('connection', function(socket){  // listening socket
 			return 1;
 		else if (m === socket.prevMsg)
 			return 2;
-		else if (new Date() - socket.prevMsgTime < 800)
+		else if (new Date() - socket.prevMsgTime < 1200)
 			return 3;
 		else
 			return 0;
@@ -172,26 +172,26 @@ io.on('connection', function(socket){  // listening socket
 
 // HTTP server, listen for activity on port 3000
 http.listen(8080, function(){
-print("Server initialised.")
-print("Listening on *:8080")
+	print("Server initialised.")
+	print("Listening on *:8080")
 });
 
 function print(str){
-var d = new Date();
-console.log(d.toISOString() + ' | ' + str);
+	var d = new Date();
+	console.log(d.toISOString() + ' | ' + str);
 }
 
 // generate username : TODO
 function genUser() {
-var text = "";
-var possible = "  ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-var name = [];
-for(var i = 0; i <= 6; i++){
-	var ch = possible.charAt(Math.random() * possible.length);
-	if(ch !== " ")
-		name.push(ch);
-}
-return name.join('');
+	var text = "";
+	var possible = "  ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	var name = [];
+	for(var i = 0; i <= 6; i++){
+		var ch = possible.charAt(Math.random() * possible.length);
+		if(ch !== " ")
+			name.push(ch);
+	}
+	return name.join('');
 }
 
 

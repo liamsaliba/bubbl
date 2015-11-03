@@ -10,6 +10,7 @@ var prev_msg_username; // used for '.same'
 var prev_msg = "."; // to be used for spam protection
 var prev_msg_time;
 var room;
+var active = true;
 
 // bubbl logo
 var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
@@ -20,13 +21,14 @@ var colours = {}; // these are defined in the colour section.
 msg('n d', "you joined " + bubbl);
 
 if(getCookie("hue") !== "")
-	change_color(getCookie("hue")); // maybe use a cookie to change colour?
+	change_color(getCookie("hue"));
 else
 	change_color(280);
 
 // send leave receipt to server
-window.onbeforeunload = function() { 
-	socket.emit('leave');
+window.onbeforeunload = function() {
+	if(active) // TODO: prevent XSS issues here
+		socket.emit('leave');
 }
 
 // on document load
@@ -168,8 +170,8 @@ function parseChatBox(){
 				default:
 					msg('n e', "invalid colour. try a number or colour name.");
 						break;
-				$("#hue-slider").slider("value", user_hue);
 			}
+			$("#hue-slider").slider("value", user_hue);
 		}
 		else
 			msg('n e', "invalid command. use \\ to escape ! commands.");
@@ -242,6 +244,7 @@ socket.on('disconnect', function(){
 
 // away error box
 socket.on("inactive", function(){
+	active = false;
 	$("#modal").fadeIn();
 	$("#inactive").animate({bottom: "50px"}, "fast");
 	$(".rejoin").animate({left: "15px"}, "fast");
@@ -253,6 +256,7 @@ $("#inactive > .rejoin").click(function(){
 	$(".rejoin").animate({left: "-100px"}, "fast");
 	socket.emit("join");
 	change_color(user_hue);
+	active = true;
 });
 
 $("#disconnect > .rejoin").click(function(){

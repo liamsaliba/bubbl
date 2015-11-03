@@ -19,6 +19,22 @@
 	background-color: hsla(280, 100%, 60%, 0.7);
 }
 
+#top-gradient {
+	position: fixed;
+	background: transparent;
+	/* Old Browsers */background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+	 /* FF3.6+ */background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
+	/* Chrome, Safari4+ */background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+	 /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+	 /* Opera 11.10+ */background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+	 /* IE 10+ */background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+	/* W3C */filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=0 );
+	/* IE6-9 */
+	z-index: 5;
+	width: 100%;
+	height: 50px;
+}
+
 /* logo */
 #float-logo {
 	position: fixed;
@@ -48,7 +64,7 @@
 	padding-right: 8px;
 	padding-left: 12px;
 	color: white;
-	z-index: 3;
+	z-index: 8;
 	-webkit-border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
 	border-bottom-left-radius: 10px;
@@ -96,8 +112,7 @@
 	padding-top: 55px;
 	font-size: 14px;
 	background-color: hsla(280, 100%, 30%, 0.7);
-
-	z-index: 2;
+	z-index: 9;
 
 	-webkit-border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
@@ -153,7 +168,7 @@
 	padding: 2px 4px;
 	font-size: 9px;
 	text-align: center;
-	min-width: 15px;
+	min-width: 17px;
 	margin-left: 3px;
 }
 
@@ -169,7 +184,7 @@
 	-webkit-text-stroke-color: lightgray;
 }
 
-#hue-slider {
+#hue-slider { //totally not skidded at all
 	margin: 5px;
 	margin-top: 8px;
 	background: -moz-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
@@ -187,6 +202,9 @@
 }
 
 
+
+
+
 #msgs {
 	position: fixed;
 	padding: 0 8px;
@@ -196,7 +214,7 @@
 /* don't touch this now. it fucking works...*/
 #messages {
 	position: fixed;
-	padding-top: 10px;
+	padding-top: 25px;
 	padding-bottom: 10px;
 	bottom: 50px;
 	width: 100%;
