@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io.connect("http://bubbl.chat/");
 socket.emit('join');
 
 var typing = false; //TODO
@@ -8,6 +8,7 @@ var user_hue = 280;
 var username;
 var prev_msg_username; // used for '.same'
 var prev_msg = "."; // to be used for spam protection
+var prev_msg_time;
 var room;
 
 // bubbl logo
@@ -63,7 +64,7 @@ $('#logo').click(function(){
 $('#float-username').click(function(){
 	socket.emit("rejoin");
 	$('#change-tip').fadeOut();
-	$("#float-username").css({"background-color": colours.forty, "color": idealTextColor(colours.forty)}); //40
+	$("#float-username").css("background-color", colours.forty); //40
 });
 
 // expanding text area, shift-enter
@@ -73,6 +74,9 @@ $("#m").keydown(function(e){
         // prevent default behavior
         e.preventDefault();
         parseChatBox();
+    }
+    if(e.keyCode == 13 && e.shiftKey && $(this).val().split("\n").length >= 12) { 
+        return false;
     }
 });
 
@@ -92,7 +96,7 @@ $('#input').submit(function(){
 
 function parseChatBox(){
 	// remove white space, make html safe.
-	var m = fix($('#m').val().trim());
+	var m = $('#m').val()//.trim();
 
 	// ! commands
 	if (m.charAt(0) === "!"){
@@ -164,11 +168,8 @@ function parseChatBox(){
 				default:
 					msg('n e', "invalid colour. try a number or colour name.");
 						break;
+				$("#hue-slider").slider("value", user_hue);
 			}
-			
-		} //force refresh
-		else if (m.substring(1,3) === "fr"){
-			socket.emit('fr');
 		}
 		else
 			msg('n e', "invalid command. use \\ to escape ! commands.");
@@ -203,6 +204,11 @@ socket.on('join', function(data){
 socket.on('leave', function(data){
 	msg('n l', data.username + " left " + bubbl);
 	$('#online-count').html(data.numUsers + " active");
+});
+
+socket.on('error', function(data){
+	msg('n e', data);
+	$("#messages").scrollTop($("#messages")[0].scrollHeight); // scroll to bottom on error
 });
 
 socket.on('fr', function(){
@@ -241,7 +247,7 @@ socket.on("inactive", function(){
 	$(".rejoin").animate({left: "15px"}, "fast");
 })
 
-$(".rejoin").click(function(){
+$("#inactive > .rejoin").click(function(){
 	$("#modal").fadeOut();
 	$("#disconnect, #inactive").animate({bottom: "-150px"}, "fast");
 	$(".rejoin").animate({left: "-100px"}, "fast");
@@ -249,6 +255,9 @@ $(".rejoin").click(function(){
 	change_color(user_hue);
 });
 
+$("#disconnect > .rejoin").click(function(){
+	location.reload(true);
+})
 
 // when username change is available, change bg colour
 socket.on("change available", function(){
@@ -274,16 +283,15 @@ function msg(id, m){
 // replies
 function msgm(m, user, hue){
 	var offset = $("#messages")[0].scrollHeight;
-	d = new Date();
 
 	if (~m.indexOf("@"+username)){
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)).append($('<div class="time">').html(d.getHours() + ":" + d.getMinutes())));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === user)
 			$(".i:last, .u:last").addClass("same");
 		$('.i:last').css("background-color", colours.seventyf).css("color", idealTextColor(colours.eighty)).fadeIn(300);
 	}
 	else {
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(m)).append($('<div class="time">').html(d.getHours() + ":" + d.getMinutes())));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(m)).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === user)
 			$(".m:last, .u:last").addClass("same");
 		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 90%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
@@ -299,23 +307,24 @@ function msgm(m, user, hue){
 	});
 
 	$(".m:last").click(function() {
-		$('.time:last').fadeToggle(300);
+		$(this).parent().find('.time').fadeToggle(300);
 	});
 }
 
 // message to server
 function send_msg(m){
-	if (is_legal(m) === 0) {
+	fixm = fix(m.trim());
+	if (is_legal(fixm) === 0) {
 		socket.emit('chat message', m);
 		d = new Date();
-		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(m)).append($('<div class="time">').html(d.getHours() + ":" + d.getMinutes())));
+		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(fixm)).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === username)
 			$(".u:last, .o:last").addClass("same");
 		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
 		$('.u:last').fadeIn(300);
 
 		prev_msg_username = username;
-		prev_msg = m;
+		prev_msg = fixm;
 
 		$(".u:last").click(function() {
 			$("#m").val($("#m").val()+"@" + $(this).text());
@@ -323,29 +332,45 @@ function send_msg(m){
 		});
 
 		$(".o:last").click(function() {
-			$('.time:last').fadeToggle(300);
+			$(this).parent().find('.time').fadeToggle(300);
 		});
 	}
-	else if (is_legal(m) === 1)
+	else if (is_legal(fixm) === 1)
 		msg('n e', "you need to type something to say something");
-	else if (is_legal(m) === 2)
+	else if (is_legal(fixm) === 2)
 		msg('n e', "you already said that");
-	else if (is_legal(m) === 3)
-		msg('n e', "you already said that, cheeky.")
+	else if (is_legal(fixm) === 3)
+		msg('n e', "you're sending messages too fast")
+	else
+		msg('n e', "you sent illegal text")
+
+	prev_msg_time = new Date();
 }
 
 // TODO: spam protection in this.
+// CLIENT SIDED spam protection, only for client messages
+// If you break this, please responsibly report it to me.
 function is_legal(m){
-	if (m === prev_msg) // if nothing entered
-		return 2;
-	else if (m === "")
+	if (m === "") // if nothing entered
 		return 1;
-	else if (m.split(" ") === prev_msg.split(" ")){
-		console.log()
+	else if (m === prev_msg)
+		return 2;
+	else if (new Date() - prev_msg_time < 800)
 		return 3;
-	}
 	else
 		return 0;
+}
+
+function fix(string) {
+	var entityMap = {"&": "&amp;","<": "&lt;",">": "&gt;",'"': '&quot;',"'": '&#39;',"/": '&#x2F;'};
+
+	var str = String(string).replace(/[&<>"'\/]/g, function (s) {
+		return entityMap[s];
+	});
+	str = str.replace(/\n\s*\n/g, '\n');
+	str = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+	// rich text
+	return str;
 }
 
 // TODO: make this a setting in menu... enables / disables certain messages
@@ -360,6 +385,7 @@ function isEnabled(id){
 	}
 }
 
+// hide new messages when scroll to bottom
 $("#messages").scroll(function(){
 	if($("#messages")[0].scrollHeight - $("#messages").scrollTop() - $("#messages").outerHeight() < 1){
 		$("#newmsg").animate({bottom: "0px"}, "fast");
@@ -372,22 +398,15 @@ function scroll(offset){
 		if(offset - $("#messages").scrollTop() == $("#messages").outerHeight())
 			$("#messages").scrollTop($("#messages")[0].scrollHeight);
 		else {
-			$("#newmsg").animate({bottom: "60px"}, "fast");
+			$("#newmsg").animate({bottom: "60px"}, "fast"); //new message indicator
 		}
 	}
 }
 
-// for fix string
-var entityMap = {"&": "&amp;","<": "&lt;",">": "&gt;",'"': '&quot;',"'": '&#39;',"/": '&#x2F;'};
-
-function fix(string) {
-	var str = String(string).replace(/[&<>"'\/]/g, function (s) {
-		return entityMap[s];
-	});
-	str = str.replace(/(?:\r\n|\r|\n)/g, '<br />');
-	// rich text
-	return str;
-}
+// click on indicator = scroll bottom
+$("#newmsg").click(function(){
+	$("#messages").scrollTop($("#messages")[0].scrollHeight);
+});
 
 // manage colour
 function change_color(hue){
@@ -409,12 +428,12 @@ function change_color(hue){
 
 	$("#input #m").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
 	$("#float-logo, #sendbtn").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //50
-	$("#float-panel").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fortyf)}); //45
-	$("#float-username").css({"background-color": colours.forty, "color": idealTextColor(colours.forty)}); //40
+	$("#float-panel").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fifty)}); //45
+	$("#float-username").css({"background-color": colours.forty, "color": idealTextColor(colours.fifty)}); //40
 	$("#input").css({"background-color": colours.twenty, "color": idealTextColor(colours.twenty)}); //20
 
 	// Text colour
-	$("#float-panel > h2, #users li, .version").css("color", idealTextColor(colours.fortyf));
+	$("#float-panel > h2, #users li, .version").css("color", idealTextColor(colours.fifty));
 
 	// Logo colour
 	if($("#float-logo").css("color") === "rgb(245, 245, 245)")
@@ -461,4 +480,31 @@ function getCookie(cname) {
         if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
     }
     return "";
+}
+
+// Hue Slider
+$(function() {
+    $("#hue-slider").slider({
+      orientation: "horizontal",
+      range: "min",
+      max: 360,
+      value: 280,
+      slide: refreshSwatch,
+      change: refreshSwatch
+    });
+    $("#hue-slider").slider( "value", user_hue );
+	$(".ui-slider-handle").css( "background", colours.fifty);
+});
+
+function refreshSwatch() {
+	change_color($("#hue-slider").slider("value"));
+	$(".ui-slider-handle").css( "background", colours.fifty);
+}
+
+function getTime() {
+	d = new Date();
+	if (d.getMinutes() < 10) 
+    	return d.getHours() + ":0" + d.getMinutes();
+    else
+    	return d.getHours() + ":" + d.getMinutes();
 }

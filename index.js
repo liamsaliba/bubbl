@@ -23,15 +23,28 @@ io.on('connection', function(socket){  // listening socket
 
 	// emit chat message with username and message to other clients
 	socket.on('chat message', function(data){
+		msg = fix(data.trim());
 		if(typeof socket.username !== "undefined"){
-			clearTimeout(socket.inactiveTimeout);
-			socket.inactiveTimeout = setTimeout(function(){leave(socket.id);}, awayTime);
-			socket.broadcast.emit('chat message', {
-				username: socket.username,
-				colour: socket.colour,
-				message: data,
-			});
+			if(is_legal(msg) === 0){
+				clearTimeout(socket.inactiveTimeout);
+				socket.inactiveTimeout = setTimeout(function(){leave(socket.id);}, awayTime);
+				socket.broadcast.emit('chat message', {
+					username: socket.username,
+					colour: socket.colour,
+					message: fix(data.trim()), //nope... no XSS here
+				});
+				socket.prevMsg = msg;
+			}
+			else if(is_legal(msg) === 1)
+				io.to(socket.id).emit('error', "that message was not sent as it was empty")
+			else if(is_legal(msg) === 2)
+				io.to(socket.id).emit('error', "that message was not sent as you said that already")
+			else if(is_legal(msg) === 3)
+				io.to(socket.id).emit('error', "that message was not sent as you're sending messages too fast")
+			else
+				io.to(socket.id).emit('error', "that message was not sent")
 		}
+		socket.prevMsgTime = new Date();
 	});
 
 	socket.on('join', function(){
@@ -134,39 +147,65 @@ io.on('connection', function(socket){  // listening socket
 			delete usernames[id]
 
 			--users_active;
+			firstJoin = false;
 
 			socket.broadcast.emit('leave', {
 				username: socket.username,
 				numUsers: users_active
 			});
 
-			var firstJoin = true;
-
 			io.to(socket.id).emit("inactive");
 		}
+	}
+
+	function is_legal(m){
+		if (m === "")
+			return 1;
+		else if (m === socket.prevMsg)
+			return 2;
+		else if (new Date() - socket.prevMsgTime < 800)
+			return 3;
+		else
+			return 0;
 	}
 });
 
 // HTTP server, listen for activity on port 3000
 http.listen(8080, function(){
-	print("Server initialised.")
-	print("Listening on *:8080")
+print("Server initialised.")
+print("Listening on *:8080")
 });
 
 function print(str){
-	var d = new Date();
-	console.log(d.toISOString() + ' | ' + str);
+var d = new Date();
+console.log(d.toISOString() + ' | ' + str);
 }
 
 // generate username : TODO
 function genUser() {
-	var text = "";
-    var possible = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var name = [];
-    for(var i = 0; i <= 6; i++){
-		var ch = possible.charAt(Math.random() * possible.length);
-		if(ch !== " ")
-    		name.push(ch);
-    }
-	return name.join('');
+var text = "";
+var possible = "  ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+var name = [];
+for(var i = 0; i <= 6; i++){
+	var ch = possible.charAt(Math.random() * possible.length);
+	if(ch !== " ")
+		name.push(ch);
+}
+return name.join('');
+}
+
+
+// message legitimacy functions
+function fix(string) {
+	var entityMap = {"&": "&amp;","<": "&lt;",">": "&gt;",'"': '&quot;',"'": '&#39;',"/": '&#x2F;'};
+
+	var str = String(string).replace(/[&<>"'\/]/g, function (s) {
+		return entityMap[s];
+	});
+
+	str = str.replace(/\n\s*\n/g, '\n');
+	// TODO: \n detection: add '...'
+	str = str.replace(/(?:\r\n|\r|\n)/g, '<br />');
+	// rich text
+	return str;
 }

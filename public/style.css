@@ -128,7 +128,9 @@
 #rooms {
 	max-height: 500px;
 	overflow: scroll;
-	margin-right: -5px !important;
+	padding-bottom: 6px;
+	border-bottom-style: solid;
+	border-width: 1px;
 }
 
 #rooms li {
@@ -145,7 +147,6 @@
 
 .count {
 	display: inline-block;
-	margin-top: 2px;
 	color: black;
 	background: white;
 	border-radius: 5px;
@@ -154,7 +155,6 @@
 	text-align: center;
 	min-width: 15px;
 	margin-left: 3px;
-	margin-right: 7px;
 }
 
 .red {
@@ -169,8 +169,22 @@
 	-webkit-text-stroke-color: lightgray;
 }
 
+#hue-slider {
+	margin: 5px;
+	margin-top: 8px;
+	background: -moz-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+    background: -ms-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+    background: -o-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+    background: -webkit-gradient(linear, left, right, from(#ff0000), color-stop(0.17, #ffff00), color-stop(0.33, #00ff00), color-stop(0.5, #00ffff), color-stop(0.67, #0000ff), color-stop(0.83, #ff00ff), to(#ff0000));
+    background: -webkit-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+    background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
 
+}
 
+#hue-slider .ui-slider-range {
+	background: transparent;
+	border-width: 3px;
+}
 
 
 #msgs {
@@ -285,7 +299,8 @@
 
 .time {
 	padding: 2px;
-	margin-top: 8px !important;
+	padding-top: 10px !important;
+	height: 16px !important;
 	font-size: 12px !important;
 	color: grey;
 	clear: right !important;

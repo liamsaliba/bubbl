@@ -17,13 +17,16 @@
 		<!-- Emoji Picker -->
 		<link rel="stylesheet" type="text/css" href="ex/jquery.emojipicker.css">
 		<link rel="stylesheet" type="text/css" href="ex/jquery.emojipicker.g.css">
-		
+		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
 		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 		<script src="ex/jquery.emojipicker.js"></script>
 		<script src="ex/jquery.emojipicker.g.js"></script>
 		<script src="ex/color2color.js"></script>
-		
+
 		<!--Fonts-->
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
 
@@ -37,23 +40,23 @@
 		<link rel="apple-touch-icon-precomposed" sizes="128x128" href="/assets/fav/128x128.png">
 	</head>
 	<body>
+		<div id="top-gradient"></div>
 		<div id="float-logo">
 			<img id="logo" src="/assets/i/bubbl.png" height="35px">
 		</div>
 		<div id="float-username"></div>
-		<span id="change-tip">change username? &#10548;</span>
-		<span id="menu-tip">open menu &#10548;</span>
+		<span id="change-tip">change username? &uarr;</span>
+		<span id="menu-tip">open menu &uarr;</span>
 		<div id="float-panel">
-			<p class="version">bubbl 0.1.021 (2015-11-03)</span>
+			<p class="version">bubbl 0.1.023 (2015-11-03)</span>
 			<h2 id="online-count"></h2>
-			<h2 id="room-count">3 rooms</h2>
+			<h2 id="room-count">3 bubbl.s</h2>
 			<ul id="rooms">
 				<li><span class="room">ThisIsFourteen</span><span class="count">1</span></li>
 				<li><span class="room">BlahBlah</span><span class="count">10</span></li>
 				<li><span class="room">img</span><span class="count">600</span></li>
 			</ul>
-			<div id="slider"></div>
-
+			<div id="hue-slider"></div>
 		</div>
 
 		<div id="msgs">
@@ -64,7 +67,7 @@
 
 		<div id="input">
 			<form action="">
-				<textarea id="m" autofocus autocomplete="off" placeholder="type a message here" rows="1"></textarea>
+				<textarea id="m" autofocus autocomplete="off" placeholder="type a message here" rows="1.2" maxlength="300"></textarea>
 				<button id="sendbtn">></button>
 			</form>
 		</div>
