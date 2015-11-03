@@ -17,14 +17,14 @@ var users_active = 0;
 io.on('connection', function(socket){  // listening socket
 
 	// if user has a username and is in the chat room.
-	var userJoined = false;
 	var firstJoin = true;
 	var awayTime = 300000
 
 	// emit chat message with username and message to other clients
 	socket.on('chat message', function(data){
 		msg = fix(data.trim());
-		if(typeof socket.username !== "undefined"){
+		//if(typeof socket.username !== "undefined"){
+		if(socket.userJoined) {
 			if(is_legal(msg) === 0){
 				clearTimeout(socket.inactiveTimeout);
 				socket.inactiveTimeout = setTimeout(function(){leave(socket.id);}, awayTime);
@@ -48,32 +48,33 @@ io.on('connection', function(socket){  // listening socket
 	});
 
 	socket.on('join', function(){
-		clearTimeout(socket.inactiveTimeout);
-		socket.inactiveTimeout = setTimeout(function(){leave(socket.id);}, awayTime);
+		if(!socket.userJoined){
+			clearTimeout(socket.inactiveTimeout);
+			socket.inactiveTimeout = setTimeout(function(){leave(socket.id);}, awayTime);
 
-		socket.username = genUser(); //store username in socket session for client
-		socket.colour = 280;
-		socket.lastActive = new Date();
+			socket.username = genUser(); //store username in socket session for client
+			socket.colour = 280;
+			socket.lastActive = new Date();
+			socket.userJoined = true;
+			
+			usernames[socket.id] = {username: socket.username, colour: socket.colour, timeJoined: socket.lastActive, active: socket.active}; // store username in temporary db
+			print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+			
+			++users_active;
 
-		usernames[socket.id] = {username: socket.username, colour: socket.colour, timeJoined: socket.lastActive, active: socket.active}; // store username in temporary db
-		print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+			socket.broadcast.emit('join', {
+				username: socket.username,
+				numUsers: users_active
+			});
 		
-		++users_active;
-
-		userJoined = true;
-
-		socket.broadcast.emit('join', {
-			username: socket.username,
-			numUsers: users_active
-		});
-	
-		io.to(socket.id).emit("setname", {
-			username: socket.username,
-			numUsers: users_active,
-			success: true
-		});
-		if(firstJoin)
-			io.to(socket.id).emit("change available");
+			io.to(socket.id).emit("setname", {
+				username: socket.username,
+				numUsers: users_active,
+				success: true
+			});
+			if(firstJoin)
+				io.to(socket.id).emit("change available");
+		}
 	});
 
 	socket.on('leave', function(){
@@ -82,10 +83,11 @@ io.on('connection', function(socket){  // listening socket
 
 	socket.on('rejoin', function(){
 		clearTimeout(socket.inactiveTimeout);
-		if (Math.floor((new Date() - usernames[socket.id].timeJoined) / 60000) > 0 || firstJoin) {
+		if ((Math.floor((new Date() - usernames[socket.id].timeJoined) / 60000) > 0 || firstJoin) && socket.userJoined) {
 			socket.prevUsername = socket.username;
 			socket.username = genUser();
 			socket.lastActive = new Date();
+			socket.userJoined = true;
 
 			firstJoin = false;
 
@@ -126,9 +128,11 @@ io.on('connection', function(socket){  // listening socket
 	});
 	
 	socket.on('change colour', function(colour) {
-		socket.colour = colour;
-		usernames[socket.id].colour = colour;
-		print("h " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		if(socket.userJoined){
+			socket.colour = colour;
+			usernames[socket.id].colour = colour;
+			print("h " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+		}
 	});
 
 	socket.on('typing', function(msg){
@@ -140,7 +144,7 @@ io.on('connection', function(socket){  // listening socket
 	});
 
 	function leave(id){
-		if(userJoined){
+		if(socket.userJoined){
 			clearTimeout(socket.inactiveTimeout);
 
 			print("- " + id);
@@ -148,6 +152,7 @@ io.on('connection', function(socket){  // listening socket
 
 			--users_active;
 			firstJoin = false;
+			socket.userJoined = false;
 
 			socket.broadcast.emit('leave', {
 				username: socket.username,
