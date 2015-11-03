@@ -15,6 +15,13 @@
   user-select: none;
 }
 
+img.emoji {
+   height: 1em;
+   width: 1em;
+   margin: 0 .05em 0 .1em;
+   vertical-align: -0.1em;
+}
+
 ::selection .highlight {
 	background-color: hsla(280, 100%, 60%, 0.7);
 }
@@ -54,6 +61,7 @@
 	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	  cursor: pointer;
 }
 
 #float-username {
@@ -76,6 +84,7 @@
 
 .changable {
 	background-color: hsl(280, 100%, 60%) !important;
+	cursor: pointer;
 }
 
 #change-tip {
@@ -193,12 +202,13 @@
     background: -webkit-gradient(linear, left, right, from(#ff0000), color-stop(0.17, #ffff00), color-stop(0.33, #00ff00), color-stop(0.5, #00ffff), color-stop(0.67, #0000ff), color-stop(0.83, #ff00ff), to(#ff0000));
     background: -webkit-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
     background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
-
+    cursor: pointer;
 }
 
 #hue-slider .ui-slider-range {
 	background: transparent;
 	border-width: 3px;
+	cursor: pointer;
 }
 
 
@@ -257,6 +267,7 @@
 .m {
 	background-color: hsl(280, 100%, 95%);
 	color: black;
+	cursor: pointer;
 }
 
 /* li setting - all notifications */
@@ -299,6 +310,7 @@
 /* own message */
 .o {
 	background-color: hsl(280, 100%, 50%);
+	cursor: pointer;
 }
 
 /* username */
@@ -313,6 +325,7 @@
 	-webkit-box-shadow: none !important;
 	-moz-box-shadow: none !important;
 	box-shadow: none !important;
+	cursor: pointer;
 }
 
 .time {
@@ -362,6 +375,7 @@
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	background-color: #FFCC00 !important;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 
@@ -403,6 +417,7 @@
 	color: white;
 	padding-bottom: 2px;
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
+	cursor: pointer;
 }
 
 #sendbtn:hover {
@@ -416,7 +431,7 @@
 
 .emojiPicker {
 	top: calc(100% - 305px) !important;
-	left: calc(100% - 265px) !important; 
+	left: calc(100% - 265px) !important;
 }
 
 
@@ -452,6 +467,7 @@
 	border: none;
 	left: -100px;
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
+	cursor: pointer;
 }
 
 .rejoin:active {

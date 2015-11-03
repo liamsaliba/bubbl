@@ -289,13 +289,13 @@ function msgm(m, user, hue){
 	var offset = $("#messages")[0].scrollHeight;
 
 	if (~m.indexOf("@"+username)){
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(m)).append($('<div class="time">').html(getTime())));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === user)
 			$(".i:last, .u:last").addClass("same");
 		$('.i:last').css("background-color", colours.seventyf).css("color", idealTextColor(colours.eighty)).fadeIn(300);
 	}
 	else {
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(m)).append($('<div class="time">').html(getTime())));
+		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === user)
 			$(".m:last, .u:last").addClass("same");
 		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 90%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
@@ -321,7 +321,7 @@ function send_msg(m){
 	if (is_legal(fixm) === 0) {
 		socket.emit('chat message', m);
 		d = new Date();
-		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(fixm)).append($('<div class="time">').html(getTime())));
+		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(twemoji.parse(fixm))).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === username)
 			$(".u:last, .o:last").addClass("same");
 		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
