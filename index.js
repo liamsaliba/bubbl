@@ -57,7 +57,7 @@ io.on('connection', function(socket){  // listening socket
 			socket.userJoined = true;
 
 			usernames[socket.id] = {username: socket.username, colour: socket.colour, timeJoined: socket.lastActive, active: socket.active}; // store username in temporary db
-			print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
+			print("+ " + socket.id + " : " + socket.request.socket.remoteAddress + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 			
 			++users_active;
 
@@ -146,7 +146,7 @@ io.on('connection', function(socket){  // listening socket
 		if(socket.userJoined){
 			clearTimeout(socket.inactiveTimeout);
 
-			print("- " + id);
+			print("- " + id + " : " + socket.request.socket.remoteAddress);
 			delete usernames[id]
 
 			--users_active;

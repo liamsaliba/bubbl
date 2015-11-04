@@ -13,20 +13,25 @@ var room; //TODO
 var active = true;
 var notifications = 0; //for favicon
 var error_timeout; // for error animation
+var clear_timeout;
+var typing_offset = 0; // when typing, for animation (msg())
 
 // bubbl logo
 var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
 
 var colours = {}; // these are defined in the colour section.
 
+msg('n d', "you joined " + bubbl);
+
 // Talking TO server
 
+// get colour from cookie
 if(getCookie("hue") !== "")
 	change_color(getCookie("hue"));
 else
 	change_color(280);
 
-// send leave receipt to server
+// send leave receipt to server # only for cleanliness
 window.onbeforeunload = function() {
 	if(active)
 		socket.emit('leave');
@@ -83,7 +88,7 @@ $("#m").keydown(function(e){
     }
 });
 
-// Chat box parsing
+// Chat box parsing / emoji picker on button press
 $('#sendbtn').click(function(){
 	if(typeof window.orientation !== "undefined")
 		parseChatBox();
@@ -221,12 +226,8 @@ socket.on('fr', function(){
 socket.on('setname', function(data){
 	if(data.success){
 		$("#messages").empty();
-		if(username === "")
-			msg('n d', "you, " + data.username + ", joined " + bubbl);
-		else
-			msg('n d', "you are now " + data.username);
-
 		username = data.username;
+		msg('n d', "you are now " + username);
 		$('#float-username').animate({right: 0}, "slow");
 		setTimeout("$('#float-username').html(username);", 400);
 		document.title = 'bubbl. ' + username;
@@ -260,19 +261,10 @@ socket.on("inactive", function(){
 
 })
 
-$("#inactive > .rejoin").click(function(){
-	socket = io.connect("http://bubbl.chat/");
-	$("#modal").fadeOut();
-	$("#disconnect, #inactive").animate({bottom: "-150px"}, "fast");
-	$(".rejoin").animate({left: "-100px"}, "fast");
-	socket.emit("join");
-	change_color(user_hue);
-	active = true;
+// see patch 0.1.025 for old animation code
+$(".rejoin").click(function(){
+	location.reload(true); //
 });
-
-$("#disconnect > .rejoin").click(function(){
-	location.reload(true);
-})
 
 // when username change is available, change bg colour
 socket.on("change available", function(){
@@ -286,15 +278,17 @@ socket.on("change available", function(){
 function msg(id, m){
 	if (id === 'error'){
 		$('#notifications').append($('<div class="error">').text(m));
-		$('.error:last').animate({bottom: 50}, 400);
-		$('#messages').animate({bottom: 80}, 400);
+		clearTimeout(error_timeout);
+		clearTimeout(clear_timeout);
+		$('.error:last').animate({bottom: 50 + typing_offset}, 400);
+		$('#messages').animate({bottom: 80 + typing_offset}, 400);
 
-		setTimeout("$('.error:not(:last)').remove();", 400)
-		clearTimeout(error_timeout)
+		clear_timeout = setTimeout("$('.error:not(:last)').remove();", 400)
 		error_timeout = setTimeout(function() {
 			$('.error:last').animate({bottom: 0}, 400);
-			$('#messages').animate({bottom: 50}, 400);
+			$('#messages').animate({bottom: 50 + typing_offset}, 400);
 		}, 3000);
+		
 	}
 	else {
 		var offset = $("#messages")[0].scrollHeight;
