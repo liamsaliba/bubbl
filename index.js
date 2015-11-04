@@ -174,15 +174,15 @@ io.on('connection', function(socket){  // listening socket
 	}
 
 	function is_legal(m){
-	if (m === "")
-		return 1;
-	else if (m === socket.prevMsg)
-		return 2;
-	else if (new Date() - socket.prevMsgTime < 1000)
-		return 3;
-	else
-		return 0;
-}
+		if (m === "")
+			return 1;
+		else if (m === socket.prevMsg && (new Date() - socket.prevMsgTime < 4000))
+			return 2;
+		else if (new Date() - socket.prevMsgTime < 1000)
+			return 3;
+		else
+			return 0;
+	}
 });
 
 // HTTP server, listen for activity on port 3000

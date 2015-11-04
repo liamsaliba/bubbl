@@ -14,14 +14,12 @@ var active = true;
 var notifications = 0; //for favicon
 var error_timeout; // for error animation
 var clear_timeout;
-var typing_offset = 0; // when typing, for animation (msg())
+var typing_offset = 0; // when typing, for animation (error())
 
 // bubbl logo
 var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
 
 var colours = {}; // these are defined in the colour section.
-
-msg('n d', "you joined " + bubbl);
 
 // Talking TO server
 
@@ -49,6 +47,12 @@ $(document).ready(function(){
 			position: 'top'
 		});
 	 }
+});
+
+// favicon notifications reset on window focus
+$(window).on('focus', function() {
+	notifications = 0;
+	Tinycon.setBubble();
 });
 
 // tips
@@ -115,7 +119,7 @@ function parseChatBox(){
 		// !h
 		else if ((m.charAt(1) === "h" && m.substring(2) === " ") && !isNaN(m.substring(3))){
 			change_color(m.substring(3));
-			msg('n d', "successfully changed your hue to " + m.substring(3));
+			info("successfully changed your hue to " + m.substring(3));
 		} // !c
 		else if (m.charAt(1) === "c" && m.substring(3) !== ""){
 			switch (m.substring(3)){
@@ -123,64 +127,64 @@ function parseChatBox(){
 				case 'reset':
 				case 'default':
 					change_color(280);
-					//msg('n d', "successfully changed your colour to purple");
+					//info("successfully changed your colour to purple");
 					break;
 				case 'red':
 					change_color(0);
-					//msg('n d', "successfully changed your colour to red");
+					//info("successfully changed your colour to red");
 					break;
 				case 'orange':
 					change_color(25);
-					//msg('n d', "successfully changed your colour to orange");
+					//info("successfully changed your colour to orange");
 					break;
 				case 'gold':
 					change_color(45);
-					//msg('n d', "successfully changed your colour to gold");
+					//info("successfully changed your colour to gold");
 					break;
 				case 'yellow':
 					change_color(60);
-					//msg('n d', "successfully changed your colour to yellow");
+					//info("successfully changed your colour to yellow");
 					break;
 				case 'lime':
 					change_color(80);
-					//msg('n d', "successfully changed your colour to lime");
+					//info("successfully changed your colour to lime");
 					break;
 				case 'green':
 					change_color(100);
-					//msg('n d', "successfully changed your colour to green");
+					//info("successfully changed your colour to green");
 					break;
 				case 'turquoise':
 					change_color(150);
-					//msg('n d', "successfully changed your colour to turquoise");
+					//info("successfully changed your colour to turquoise");
 					break;
 				case 'aqua': 
 					change_color(175);
-					//msg('n d', "successfully changed your colour to aqua");
+					//info("successfully changed your colour to aqua");
 					break;
 				case 'sky':
 					change_color(200);
-					//msg('n d', "successfully changed your colour to sky");
+					//info("successfully changed your colour to sky");
 					break;
 				case 'blue':
 					change_color(240);
-					//msg('n d', "successfully changed your colour to blue");
+					//info("successfully changed your colour to blue");
 					break;
 				case 'magenta':
 					change_color(310);
-					//msg('n d', "successfully changed your colour to magenta");
+					//info("successfully changed your colour to magenta");
 					break;
 				case 'pink':
 					change_color(330);
-					//msg('n d', "successfully changed your colour to pink");
+					//info("successfully changed your colour to pink");
 					break;
 				default:
-					msg('error', "invalid colour. try a number or colour name.");
+					error("invalid colour. try a number or colour name.");
 						break;
 			}
 			$("#hue-slider").slider("value", user_hue);
 		}
 		else
-			msg('error', "invalid command. use \\ to escape ! commands.");
+			error("invalid command. use \\ to escape ! commands.");
 	} 
 	// escape \
 	else if (m.charAt(0) === "\\") 
@@ -201,21 +205,21 @@ function parseChatBox(){
 
 // Socket recieve responses
 socket.on('chat message', function(data){
-	msgm(data.message, data.username, data.colour);
+	msg(data.message, data.username, data.colour);
 });
 
 socket.on('join', function(data){
-	msg('n j', data.username + " joined " + bubbl);
+	//msg('n j', data.username + " joined " + bubbl);  //TODO, add join / leave users under bubbl logo
 	$('#online-count').html(data.numUsers + " active");
 });
 
 socket.on('leave', function(data){
-	msg('n l', data.username + " left " + bubbl);
+	//msg('n l', data.username + " left " + bubbl);
 	$('#online-count').html(data.numUsers + " active");
 });
 
 socket.on('error', function(data){
-	msg('error', data);
+	error(data);
 	//$("#messages").scrollTop($("#messages")[0].scrollHeight); // scroll to bottom on error
 });
 
@@ -226,8 +230,11 @@ socket.on('fr', function(){
 socket.on('setname', function(data){
 	if(data.success){
 		$("#messages").empty();
+		if(username === "")
+			info("you joined " + bubbl);
+		else
+			info("you are now " + data.username);
 		username = data.username;
-		msg('n d', "you are now " + username);
 		$('#float-username').animate({right: 0}, "slow");
 		setTimeout("$('#float-username').html(username);", 400);
 		document.title = 'bubbl. ' + username;
@@ -235,7 +242,7 @@ socket.on('setname', function(data){
 		$('#online-count').html(data.numUsers + " active");
 	}
 	else {
-		msg('error', "you need to wait a minute to change your username")
+		error("you need to wait a minute to change your username")
 	}
 });
 
@@ -274,88 +281,66 @@ socket.on("change available", function(){
 	$('#change-tip').fadeIn();
 })
 
+// red error messages on screen bottom
+function error(m){
+	$('#notifications').append($('<div class="error">').text(m));
+	clearTimeout(error_timeout);
+	clearTimeout(clear_timeout);
+	$('.error:last').animate({bottom: 50 + typing_offset}, 400);
+	$('#messages').animate({bottom: 80 + typing_offset}, 400);
 
-// message into client
-function msg(id, m){
-	if (id === 'error'){
-		$('#notifications').append($('<div class="error">').text(m));
-		clearTimeout(error_timeout);
-		clearTimeout(clear_timeout);
-		$('.error:last').animate({bottom: 50 + typing_offset}, 400);
-		$('#messages').animate({bottom: 80 + typing_offset}, 400);
-
-		clear_timeout = setTimeout("$('.error:not(:last)').remove();", 400)
-		error_timeout = setTimeout(function() {
-			$('.error:last').animate({bottom: 0}, 400);
-			$('#messages').animate({bottom: 50 + typing_offset}, 400);
-		}, 3000);
-		
-	}
-	else {
-		var offset = $("#messages")[0].scrollHeight;
-		$('#messages').append($('<li>').append($('<div class="' + id + '">').html(m)));
-
-		if(isEnabled(id)) //disable
-			$('#messages div:last').fadeIn(300);
-		
-		scroll(offset);
-	}
+	clear_timeout = setTimeout("$('.error:not(:last)').remove();", 400)
+	error_timeout = setTimeout(function() {
+		$('.error:last').animate({bottom: 0}, 400);
+		$('#messages').animate({bottom: 50 + typing_offset}, 400);
+	}, 3000);
 }
-// replies
-function msgm(m, user, hue){
-	var offset = $("#messages")[0].scrollHeight;
 
+// black info messages
+function info(m){
+	$('#messages').append($('<li>').append($('<div class="info">').html(m).fadeIn(300)));
+}
+
+// replies
+function msg(m, user, hue){
+	var offset = $("#messages")[0].scrollHeight;
+	var u = 'u'
+	var id = 'm';
+	var colour = "hsl(" + hue + ", 100%, 90%)";
 	if (user === username){
-		$('#messages').append($('<li>').append($('<div class="u user">').html(user + '<span class="invisible"> </span>')).append($('<div class="o">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
-		if(prev_msg_username === user)
-			$(".o:last, .u:last").addClass("same");
-		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
-		$(".o:last").click(function() {
-			$(this).parent().find('.time').fadeToggle(300);
-		});
+		u = 'u user';
+		id = 'o';
+		colour = colours.fifty;
 	}
 	else if (~m.indexOf("@"+username)){
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
-		if(prev_msg_username === user)
-			$(".i:last, .u:last").addClass("same");
-		$('.i:last').css("background-color", colours.seventyf).css("color", idealTextColor(colours.eighty)).fadeIn(300);
-		$(".i:last").click(function() {
-			$(this).parent().find('.time').fadeToggle(300);
-		});
-	}
-	else {
-		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
-		if(prev_msg_username === user)
-			$(".m:last, .u:last").addClass("same");
-		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 90%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
-		$(".m:last").click(function() {
-			$(this).parent().find('.time').fadeToggle(300);
-		});
+		id = 'i';
+		colour = colours.seventyf;
 	}
 
-	// .u stuff
-	$(".u:last").click(function() {
-		$("#m").val($("#m").val() + '@' +$(this).text());
-		$("#input #m").focus();
+	$('#messages').append($('<li>').append($('<div class="' + u + '">').html(user).click(function() {
+		$("#m").val($("#m").val() + '@' + $(this).text() + " ");
+		$("#input #m").focus(); // username append to input
+	}).fadeIn(300)).append($('<div class="' + id + '">').html(twemoji.parse(m)).css("background-color", colour).css("color", idealTextColor(colour)).fadeIn(300)).append($('<div class="time">').html(getTime())));
+	/* append li -> append username -> click on username add to input -> fade username on entrance -> append message -> parse emoji -> set background & text colour -> fade message on entrance -> append time */
+
+	// blank username when multiple messages from same person
+	if(prev_msg_username === user)
+		$("." + id + ":last, .u:last").addClass("same");
+
+	// time on click
+	$("." + id + ":last").click(function() {
+		$(this).parent().find('.time').fadeToggle(300);
 	});
-	$('.u:last').fadeIn(300);
+
 	prev_msg_username = user;
 	scroll(offset);
 
-	notifications++;
-	if(!document.hasFocus())
+	if(user !== username && !document.hasFocus()){
+		notifications++;
 		Tinycon.setBubble(notifications);
+	}
 }
 
-$(window).on('focus', function() {
-	notifications = 0;
-	Tinycon.setBubble();
-});
-
-// message to server
-function send_msg(m){
-	
-}
 
 // TODO: make this a setting in menu... enables / disables certain messages
 function isEnabled(id){

@@ -256,25 +256,14 @@ img.emoji {
 	max-width: calc(100% - 130px);
 }
 
-/* Specific settings
-   n: notification, j: join, l: leave, e: error 
-   a: away; b: back;
+/*
    m: incoming msg, o: own, u: user highlight, 
-   div settings
 */
 
-/* reply messages */
-.m {
-	background-color: hsl(280, 100%, 95%);
-	color: black;
-	cursor: pointer;
-}
-
 /* li setting - all notifications */
-.n {
+.info {
 	display: block;
 	padding: 6px 8px !important;
-	/*margin-left: 20px !important;*/
 	clear: both !important;
 	background-color: black !important;
 	font-size: 9pt !important;
@@ -282,25 +271,17 @@ img.emoji {
 }
 
 
+/* normal (reply) messages */
+.m {
+	background-color: hsl(280, 100%, 95%);
+	color: black;
+	cursor: pointer;
+}
+
 /* important message, references username */
 .i {
 	background-color: hsl(280, 20%, 100%);
-}
-
-.j {
-	background-color: #009933 !important;
-}
-
-.l {
-	background-color: #CC0000 !important;
-}
-
-.a {
-	background-color: #FFCC00 !important;
-}
-
-.b {
-	background-color: #0066FF !important;
+	cursor: pointer;
 }
 
 /* own message */
@@ -324,6 +305,11 @@ img.emoji {
 	cursor: pointer;
 }
 
+/* own username */
+.user {
+	font-weight: bold;
+}
+
 .time {
 	padding: 2px;
 	padding-top: 10px !important;
@@ -337,10 +323,6 @@ img.emoji {
 	display: none;
 }
 
-.invisible {
-	color: transparent !important;
-}
-
 /* set previous message to .s if same person */
 .same.u  {
 	color: transparent !important;
@@ -349,11 +331,6 @@ img.emoji {
 /* decrease space if same person */
 .same {
 	margin-top: 2px !important;
-}
-
-/* own username */
-.user {
-	font-weight: bold;
 }
 
 
