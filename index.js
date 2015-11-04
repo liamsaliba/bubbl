@@ -23,7 +23,6 @@ io.on('connection', function(socket){  // listening socket
 	// emit chat message with username and message to other clients
 	socket.on('chat message', function(data){
 		msg = fix(data.trim());
-		//if(typeof socket.username !== "undefined"){
 		if(socket.userJoined) {
 			if(is_legal(msg) === 0){
 				clearTimeout(socket.inactiveTimeout);
@@ -36,13 +35,13 @@ io.on('connection', function(socket){  // listening socket
 				socket.prevMsg = msg;
 			}
 			else if(is_legal(msg) === 1)
-				io.to(socket.id).emit('error', "that message was not sent as it was empty")
+				io.to(socket.id).emit('error', "you need to type something to say something")
 			else if(is_legal(msg) === 2)
-				io.to(socket.id).emit('error', "that message was not sent as you said that already")
+				io.to(socket.id).emit('error', "you just said that")
 			else if(is_legal(msg) === 3)
-				io.to(socket.id).emit('error', "that message was not sent as you're sending messages too fast")
+				io.to(socket.id).emit('error', "you're talking too fast")
 			else
-				io.to(socket.id).emit('error', "that message was not sent")
+				io.to(socket.id).emit('error', "you sent something we couldn't handle")
 		}
 		socket.prevMsgTime = new Date();
 	});
@@ -56,7 +55,7 @@ io.on('connection', function(socket){  // listening socket
 			socket.colour = 280;
 			socket.lastActive = new Date();
 			socket.userJoined = true;
-			
+
 			usernames[socket.id] = {username: socket.username, colour: socket.colour, timeJoined: socket.lastActive, active: socket.active}; // store username in temporary db
 			print("+ " + socket.id + " : " + usernames[socket.id].username + " : h" + usernames[socket.id].colour);
 			
@@ -160,6 +159,7 @@ io.on('connection', function(socket){  // listening socket
 			});
 
 			io.to(socket.id).emit("inactive");
+			socket.disconnect();
 		}
 	}
 
@@ -168,7 +168,7 @@ io.on('connection', function(socket){  // listening socket
 			return 1;
 		else if (m === socket.prevMsg)
 			return 2;
-		else if (new Date() - socket.prevMsgTime < 1200)
+		else if (new Date() - socket.prevMsgTime < 1000)
 			return 3;
 		else
 			return 0;
@@ -189,7 +189,7 @@ function print(str){
 // generate username : TODO
 function genUser() {
 	var text = "";
-	var possible = "  ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	var possible = "     abcdefghijklmnopqrstuvwxyz0123456789";
 	var name = [];
 	for(var i = 0; i <= 6; i++){
 		var ch = possible.charAt(Math.random() * possible.length);

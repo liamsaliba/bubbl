@@ -16,8 +16,8 @@
 }
 
 img.emoji {
-   height: 1em;
-   width: 1em;
+   height: 1.3em;
+   width: 1.3em;
    margin: 0 .05em 0 .1em;
    vertical-align: -0.1em;
 }
@@ -151,7 +151,7 @@ img.emoji {
 
 #rooms {
 	max-height: 500px;
-	overflow: scroll;
+	overflow: auto;
 	padding-bottom: 6px;
 	border-bottom-style: solid;
 	border-width: 1px;
@@ -230,7 +230,7 @@ img.emoji {
 	width: 100%;
 	max-height: calc(100% - 50px);
 	list-style-type: none;
-	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 /* individual messages */
@@ -281,10 +281,6 @@ img.emoji {
 	color: white;
 }
 
-/* error message */
-.e {
-	background-color: red !important;
-}
 
 /* important message, references username */
 .i {
@@ -379,6 +375,46 @@ img.emoji {
 }
 
 
+
+/* Notifications */
+#notifications {
+	width: 100%;
+	color: white;
+}
+
+.error {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	background-color: red !important;
+	padding: 5px;
+	color: white;
+	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
+	font-size: 14px;
+	overflow: hidden;
+}
+
+#typing {
+	width: 100%;
+	position: fixed;
+	bottom: 0;
+	padding: 5px;
+	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
+	font-size: 12px;
+	background-color: black;
+}
+
+#typing-users {
+	word-wrap: normal;
+	overflow: hidden;
+    white-space: nowrap;
+	text-overflow: ellipsis;
+	display: inline-block;
+	max-width: calc(100% - 60px);
+	padding-top: 2px;
+	margin-bottom: -3px;
+}
+
 /* input section */
 #input {
 	position: fixed;
@@ -468,6 +504,9 @@ img.emoji {
 	left: -100px;
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
 	cursor: pointer;
+	//height: 30px;
+	//width: 55px;
+	text-align: center;
 }
 
 .rejoin:active {

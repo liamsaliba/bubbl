@@ -5,12 +5,14 @@ var typing = false; //TODO
 
 // set username
 var user_hue = 280;
-var username;
+var username = "";
 var prev_msg_username; // used for '.same'
 var prev_msg = "."; // to be used for spam protection
 var prev_msg_time;
-var room;
+var room; //TODO
 var active = true;
+var notifications = 0; //for favicon
+var error_timeout; // for error animation
 
 // bubbl logo
 var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
@@ -18,7 +20,6 @@ var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=
 var colours = {}; // these are defined in the colour section.
 
 // Talking TO server
-msg('n d', "you joined " + bubbl);
 
 if(getCookie("hue") !== "")
 	change_color(getCookie("hue"));
@@ -27,13 +28,13 @@ else
 
 // send leave receipt to server
 window.onbeforeunload = function() {
-	if(active) // TODO: prevent XSS issues here
+	if(active)
 		socket.emit('leave');
 }
 
 // on document load
 $(document).ready(function(){
-	 if(typeof window.orientation === "undefined"){ //detect mobile
+	 if(typeof window.orientation === "undefined"){ //detect desktop only
 	 	$("#sendbtn").text("☺");
 	 	$('#m').attr("placeholder", "type a message here and press enter")
 	 	$('#m').emojiPicker({
@@ -168,13 +169,13 @@ function parseChatBox(){
 					//msg('n d', "successfully changed your colour to pink");
 					break;
 				default:
-					msg('n e', "invalid colour. try a number or colour name.");
+					msg('error', "invalid colour. try a number or colour name.");
 						break;
 			}
 			$("#hue-slider").slider("value", user_hue);
 		}
 		else
-			msg('n e', "invalid command. use \\ to escape ! commands.");
+			msg('error', "invalid command. use \\ to escape ! commands.");
 	} 
 	// escape \
 	else if (m.charAt(0) === "\\") 
@@ -209,8 +210,8 @@ socket.on('leave', function(data){
 });
 
 socket.on('error', function(data){
-	msg('n e', data);
-	$("#messages").scrollTop($("#messages")[0].scrollHeight); // scroll to bottom on error
+	msg('error', data);
+	//$("#messages").scrollTop($("#messages")[0].scrollHeight); // scroll to bottom on error
 });
 
 socket.on('fr', function(){
@@ -219,6 +220,12 @@ socket.on('fr', function(){
 
 socket.on('setname', function(data){
 	if(data.success){
+		$("#messages").empty();
+		if(username === "")
+			msg('n d', "you, " + data.username + ", joined " + bubbl);
+		else
+			msg('n d', "you are now " + data.username);
+
 		username = data.username;
 		$('#float-username').animate({right: 0}, "slow");
 		setTimeout("$('#float-username').html(username);", 400);
@@ -227,19 +234,21 @@ socket.on('setname', function(data){
 		$('#online-count').html(data.numUsers + " active");
 	}
 	else {
-		msg('n e', "you need to wait a minute to change your username")
+		msg('error', "you need to wait a minute to change your username")
 	}
 });
 
 // Disconnect error boxes
 socket.on('disconnect', function(){
-	$("#inactive").animate({bottom: "-150px"}, "fast");
-	$(".rejoin").animate({left: "-100px"}, "fast");
-	$("#modal").fadeIn();
-	$("#disconnect").animate({bottom: "50px"}, "fast");
-	socket.on('connect', function(){
-		$(".rejoin").animate({left: "15px"}, "fast");
-	})
+	if(active){
+		$("#inactive").animate({bottom: "-150px"}, "fast");
+		$(".rejoin").animate({left: "-100px"}, "fast");
+		$("#modal").fadeIn();
+		$("#disconnect").animate({bottom: "50px"}, "fast");
+		socket.on('connect', function(){
+			$(".rejoin").animate({left: "15px"}, "fast");
+		});
+	}
 });
 
 // away error box
@@ -248,9 +257,11 @@ socket.on("inactive", function(){
 	$("#modal").fadeIn();
 	$("#inactive").animate({bottom: "50px"}, "fast");
 	$(".rejoin").animate({left: "15px"}, "fast");
+
 })
 
 $("#inactive > .rejoin").click(function(){
+	socket = io.connect("http://bubbl.chat/");
 	$("#modal").fadeOut();
 	$("#disconnect, #inactive").animate({bottom: "-150px"}, "fast");
 	$(".rejoin").animate({left: "-100px"}, "fast");
@@ -272,17 +283,28 @@ socket.on("change available", function(){
 
 
 // message into client
-function msg(id, m){	  			
-	var offset = $("#messages")[0].scrollHeight;
-	$('#messages').append($('<li>').append($('<div class="' + id + '">').html(m)));
+function msg(id, m){
+	if (id === 'error'){
+		$('#notifications').append($('<div class="error">').text(m));
+		$('.error:last').animate({bottom: 50}, 400);
+		$('#messages').animate({bottom: 80}, 400);
 
-	if(isEnabled(id)) //disable
-		$('#messages div:last').fadeIn(300);
+		setTimeout("$('.error:not(:last)').remove();", 400)
+		clearTimeout(error_timeout)
+		error_timeout = setTimeout(function() {
+			$('.error:last').animate({bottom: 0}, 400);
+			$('#messages').animate({bottom: 50}, 400);
+		}, 3000);
+	}
+	else {
+		var offset = $("#messages")[0].scrollHeight;
+		$('#messages').append($('<li>').append($('<div class="' + id + '">').html(m)));
 
-	if(id !== "n e")
+		if(isEnabled(id)) //disable
+			$('#messages div:last').fadeIn(300);
+		
 		scroll(offset);
-
-	prev_msg_username = false;
+	}
 }
 // replies
 function msgm(m, user, hue){
@@ -313,7 +335,16 @@ function msgm(m, user, hue){
 	$(".m:last").click(function() {
 		$(this).parent().find('.time').fadeToggle(300);
 	});
+
+	notifications++;
+	if(!document.hasFocus())
+		Tinycon.setBubble(notifications);
 }
+
+$(window).on('focus', function() {
+	notifications = 0;
+	Tinycon.setBubble();
+});
 
 // message to server
 function send_msg(m){
@@ -340,13 +371,13 @@ function send_msg(m){
 		});
 	}
 	else if (is_legal(fixm) === 1)
-		msg('n e', "you need to type something to say something");
+		msg('error', "you need to type something to say something");
 	else if (is_legal(fixm) === 2)
-		msg('n e', "you already said that");
+		msg('error', "you already said that");
 	else if (is_legal(fixm) === 3)
-		msg('n e', "you're sending messages too fast")
+		msg('error', "you're sending messages too fast")
 	else
-		msg('n e', "you sent illegal text")
+		msg('error', "you sent illegal text")
 
 	prev_msg_time = new Date();
 }
@@ -359,7 +390,7 @@ function is_legal(m){
 		return 1;
 	else if (m === prev_msg)
 		return 2;
-	else if (new Date() - prev_msg_time < 800)
+	else if (new Date() - prev_msg_time < 1000) // make sure this matches server
 		return 3;
 	else
 		return 0;
@@ -369,7 +400,7 @@ function fix(string) {
 	var entityMap = {"&": "&amp;","<": "&lt;",">": "&gt;",'"': '&quot;',"'": '&#39;',"/": '&#x2F;'};
 
 	var str = String(string).replace(/[&<>"'\/]/g, function (s) {
-		return entityMap[s];
+		returerrorntityMap[s];
 	});
 	str = str.replace(/\n\s*\n/g, '\n');
 	str = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');

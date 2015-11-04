@@ -20,14 +20,14 @@
 		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 
 
-		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 		<script src="ex/jquery.emojipicker.js"></script>
 		<script src="ex/jquery.emojipicker.tw.js"></script>
 		<script src="ex/color2color.js"></script>
 		<script src="//twemoji.maxcdn.com/twemoji.min.js"></script>
-
+		<script src="ex/tinycon.min.js"></script>
 		<!--Fonts-->
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
 
@@ -67,9 +67,14 @@
 
 		<div id="newmsg">. . .</div>
 
+		<div id="notifications">
+			<div id="typing">
+				<span id="typing-users">person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, </span> is typing...</div>
+		</div>
+
 		<div id="input">
 			<form action="">
-				<textarea id="m" autofocus autocomplete="off" placeholder="type a message here" rows="1.2" maxlength="300"></textarea>
+				<textarea id="m" autofocus autocomplete="off" placeholder="type a message here" rows="1.2" maxlength="400"></textarea>
 				<button id="sendbtn">></button>
 			</form>
 		</div>
@@ -77,12 +82,12 @@
 		<div id="modal">
 			<div id="disconnect">
 				<h2>oh snap.</h2>
-				something bad happened and we're trying to fix it.  just wait a moment to rejoin (time for a new name)
+				something bad happened and we're trying to fix it.  just wait a moment to rejoin.
 				<button class="rejoin">rejoin</button>
 			</div>
 			<div id="inactive">
-				<h2>nice to see you again!</h2>
-				you've been away for while.  time for a new name
+				<h2>you've been away for a bit</h2>
+				its time for a new name.
 				<button class="rejoin">rejoin</button>
 			</div>
 		</div>
