@@ -184,9 +184,9 @@ function parseChatBox(){
 	} 
 	// escape \
 	else if (m.charAt(0) === "\\") 
-		send_msg(m.substring(1));
+		socket.emit('chat message', m.substring(1));  //TODO make more verification?
 	else
-		send_msg(m);
+		socket.emit('chat message', m);
 	
 	// scroll to bottom
 	$("#messages").scrollTop($("#messages")[0].scrollHeight);
@@ -242,6 +242,7 @@ socket.on('setname', function(data){
 // Disconnect error boxes
 socket.on('disconnect', function(){
 	if(active){
+		active = false;
 		$("#inactive").animate({bottom: "-150px"}, "fast");
 		$(".rejoin").animate({left: "-100px"}, "fast");
 		$("#modal").fadeIn();
@@ -304,31 +305,42 @@ function msg(id, m){
 function msgm(m, user, hue){
 	var offset = $("#messages")[0].scrollHeight;
 
-	if (~m.indexOf("@"+username)){
+	if (user === username){
+		$('#messages').append($('<li>').append($('<div class="u user">').html(user + '<span class="invisible"> </span>')).append($('<div class="o">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
+		if(prev_msg_username === user)
+			$(".o:last, .u:last").addClass("same");
+		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
+		$(".o:last").click(function() {
+			$(this).parent().find('.time').fadeToggle(300);
+		});
+	}
+	else if (~m.indexOf("@"+username)){
 		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="i">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === user)
 			$(".i:last, .u:last").addClass("same");
 		$('.i:last').css("background-color", colours.seventyf).css("color", idealTextColor(colours.eighty)).fadeIn(300);
+		$(".i:last").click(function() {
+			$(this).parent().find('.time').fadeToggle(300);
+		});
 	}
 	else {
 		$('#messages').append($('<li>').append($('<div class="u">').html(user + '<span class="invisible"> </span>')).append($('<div class="m">').html(twemoji.parse(m))).append($('<div class="time">').html(getTime())));
 		if(prev_msg_username === user)
 			$(".m:last, .u:last").addClass("same");
 		$('.m:last').css("background-color", "hsl(" + hue + ", 100%, 90%").css("color", idealTextColor("hsl(" + hue + ", 100%, 95%)")).fadeIn(300);
+		$(".m:last").click(function() {
+			$(this).parent().find('.time').fadeToggle(300);
+		});
 	}
 
-	$('.u:last').fadeIn(300);
-	prev_msg_username = user;
-	scroll(offset);
-
+	// .u stuff
 	$(".u:last").click(function() {
 		$("#m").val($("#m").val() + '@' +$(this).text());
 		$("#input #m").focus();
 	});
-
-	$(".m:last").click(function() {
-		$(this).parent().find('.time').fadeToggle(300);
-	});
+	$('.u:last').fadeIn(300);
+	prev_msg_username = user;
+	scroll(offset);
 
 	notifications++;
 	if(!document.hasFocus())
@@ -342,64 +354,7 @@ $(window).on('focus', function() {
 
 // message to server
 function send_msg(m){
-	fixm = fix(m.trim());
-	if (is_legal(fixm) === 0) {
-		socket.emit('chat message', m);
-		d = new Date();
-		$('#messages').append($('<li>').append($('<div class="u user">').html(username + '<span class="invisible"> </span>')).append($('<div class="o">').html(twemoji.parse(fixm))).append($('<div class="time">').html(getTime())));
-		if(prev_msg_username === username)
-			$(".u:last, .o:last").addClass("same");
-		$('.o:last').css("background-color", colours.fifty).css("color", idealTextColor(colours.fifty)).fadeIn(300);
-		$('.u:last').fadeIn(300);
-
-		prev_msg_username = username;
-		prev_msg = fixm;
-
-		$(".u:last").click(function() {
-			$("#m").val($("#m").val()+"@" + $(this).text());
-			$("#input #m").focus();
-		});
-
-		$(".o:last").click(function() {
-			$(this).parent().find('.time').fadeToggle(300);
-		});
-	}
-	else if (is_legal(fixm) === 1)
-		msg('error', "you need to type something to say something");
-	else if (is_legal(fixm) === 2)
-		msg('error', "you already said that");
-	else if (is_legal(fixm) === 3)
-		msg('error', "you're sending messages too fast")
-	else
-		msg('error', "you sent illegal text")
-
-	prev_msg_time = new Date();
-}
-
-// TODO: spam protection in this.
-// CLIENT SIDED spam protection, only for client messages
-// If you break this, please responsibly report it to me.
-function is_legal(m){
-	if (m === "") // if nothing entered
-		return 1;
-	else if (m === prev_msg)
-		return 2;
-	else if (new Date() - prev_msg_time < 1000) // make sure this matches server
-		return 3;
-	else
-		return 0;
-}
-
-function fix(string) {
-	var entityMap = {"&": "&amp;","<": "&lt;",">": "&gt;",'"': '&quot;',"'": '&#39;',"/": '&#x2F;'};
-
-	var str = String(string).replace(/[&<>"'\/]/g, function (s) {
-		returerrorntityMap[s];
-	});
-	str = str.replace(/\n\s*\n/g, '\n');
-	str = str.replace(/(?:\r\n|\r|\n)/g, '<br/>');
-	// rich text
-	return str;
+	
 }
 
 // TODO: make this a setting in menu... enables / disables certain messages

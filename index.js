@@ -16,9 +16,11 @@ var users_active = 0;
 // socket.io: user connection
 io.on('connection', function(socket){  // listening socket
 
-	// if user has a username and is in the chat room.
 	var firstJoin = true;
-	var awayTime = 300000
+	var awayTime = 300000;
+
+	// TODO: IP Blocking
+
 
 	// emit chat message with username and message to other clients
 	socket.on('chat message', function(data){
@@ -27,7 +29,7 @@ io.on('connection', function(socket){  // listening socket
 			if(is_legal(msg) === 0){
 				clearTimeout(socket.inactiveTimeout);
 				socket.inactiveTimeout = setTimeout(function(){leave();}, awayTime);
-				socket.broadcast.emit('chat message', {
+				io.emit('chat message', {
 					username: socket.username,
 					colour: socket.colour,
 					message: fix(data.trim()), //nope... no XSS here
