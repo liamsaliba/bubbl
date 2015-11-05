@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+	<head>
+		<title>bubbl. server monitor</title>
+		<link rel="stylesheet" type="text/css" href="/style.css">
+		<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+
+		<script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	</head>
+	<body>
+		<div id="wrap">
+			<div id="msgs">
+				<ul id="messages"></ul>
+			</div>
+			<div id="logs">
+				<ul id="messages"></ul>
+			</div>
+			<div id="userlist">
+				<ul id="user"></ul>
+			</div>
+		</div>
+		<div id="input">
+			<input id="m" autofocus autocomplete="off" placeholder="type a command here"></input>
+			<span id="users-current">000005 active</span>
+			<span id="time-current">12:27:12 PM</span>
+		</div>
+		<script src="/main.js"></script>
+	</body>
+</html>
