@@ -12,29 +12,37 @@
 
 #wrap {
 	position: fixed;
-	padding: 0 8px;
+	width: 100%;
 }
 
 #wrap > div {
-	position: fixed;
+	display: inline-block;
+	padding: 8px;
+}
+
+#wrap > div > ul {
 	max-height: calc(100% - 50px);
 	overflow-y: auto;
 }
 
-#wrap > div > ul {
+#wrap > div > ul > li {
 	list-style-type: none;
 }
 
 #msgs {
+	position: relative;
 	width: 40%;
 }
 
 #logs {
+	position: relative;
 	width: 40%;
+	background: #eee;
 }
 
 #userlist {
-	width: 20%;
+	position: relative;
+	width: 18%;
 }
 
 #input {
@@ -66,5 +74,6 @@ input {
 	padding: 8px 10px;
 	border-radius: 5px;
 	background: white;
+	width: 100px;
 }
 

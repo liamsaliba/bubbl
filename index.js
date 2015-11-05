@@ -70,7 +70,7 @@ io.on('connection', function(socket){  // listening socket
 	});
 
 	socket.on('rejoin', function(){
-		clearTimeout(usernames[socket.id].inactiveTimeout);
+		clearTimeout(socket.inactiveTimeout);
 		if ((Math.floor((new Date() - usernames[socket.id].timeJoined) / 60000) > 0 || firstJoin) && usernames[socket.id].userJoined) {
 			
 			socket.broadcast.emit('leave', {
@@ -96,7 +96,7 @@ io.on('connection', function(socket){  // listening socket
 				success: false
 			});
 		}
-		usernames[socket.id].inactiveTimeout = setTimeout(function(){leave();}, 500000);
+		socket.inactiveTimeout = setTimeout(function(){leave();}, 500000);
 	});
 
 	socket.on('leave', function(){
@@ -123,7 +123,9 @@ io.on('connection', function(socket){  // listening socket
 			colour: 280,
 			timeJoined: new Date(),
 			userJoined: true,
-			ip: socket.request.socket.remoteAddress
+			ip: socket.request.socket.remoteAddress,
+			prevMsg: '',
+			prevMsgTime: '',
 		};
 		resetTimeout(true);
 
@@ -162,9 +164,9 @@ io.on('connection', function(socket){  // listening socket
 	}
 
 	function resetTimeout(set) {
-		clearTimeout(usernames[socket.id].inactiveTimeout);
+		clearTimeout(socket.inactiveTimeout);
 		if(set)
-			usernames[socket.id].inactiveTimeout = setTimeout(function(){leave();}, 500000);
+			socket.inactiveTimeout = setTimeout(function(){leave();}, 500000);
 	}
 });
 
@@ -210,15 +212,15 @@ mhttp.listen(3000, function(){
 
 
 mio.on('connection', function(socket){
-	setInterval(function() {
-		socket.volatile.emit(usernames);
-	}, 1000);
+	socket.emit('update', usernames);
 });
 
 function log(id, user, data){
-	mio.sockets.emit(id, {
+	mio.sockets.emit('log', {
+		id: id,
 		user: user,
 		data: data,
-		time: new Date()
+		time: new Date(),
+		usernames: usernames
 	});
 }
