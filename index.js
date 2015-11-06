@@ -62,9 +62,10 @@ io.on('connection', function(socket){  // listening socket
 
 	socket.on('join', function(){
 		if(typeof usernames[socket.id] === 'undefined'){
-			join();
 
 			++usersOnline;
+
+			join();
 
 			if(firstJoin)
 				io.to(socket.id).emit("change available");
@@ -82,7 +83,9 @@ io.on('connection', function(socket){  // listening socket
 				numUsers: usersOnline
 			});
 
+			log('leave', socket.id, 'rejoin');
 			join();
+			log('join', socket.id, 'rejoin');
 
 			firstJoin = false;
 			//msg to client when change username is available
@@ -91,7 +94,6 @@ io.on('connection', function(socket){  // listening socket
 				log('avchange', socket.id);
 			}, 60000);
 
-			log('rejoin', socket.id, 'rejoin');
 		}
 		else {
 			io.to(socket.id).emit("setname", {
@@ -150,12 +152,12 @@ io.on('connection', function(socket){  // listening socket
 
 	function leave(reason){
 		if(usernames[socket.id].userJoined){
+			--usersOnline;
 			log('leave', socket.id, reason);
 
 			resetTimeout(false);
 
 			//delete usernames[socket.id];
-			--usersOnline;
 
 			socket.userJoined = false;
 
@@ -181,14 +183,13 @@ io.on('connection', function(socket){  // listening socket
 // generate username : TODO
 function genUser() {
 	var text = "";
-	var possible = "     abcdefghijklmnopqrstuvwxyz0123456789";
+	var word = words[Math.floor(Math.random()*words.length)].trim();
 	var name = [];
-	for(var i = 0; i <= 6; i++){
-		var ch = possible.charAt(Math.random() * possible.length);
-		if(ch !== " ")
-			name.push(ch);
+	for(var i = 0; i <= 7-word.length; i++){
+		name.push(Math.floor(Math.random() * 10));
 	}
-	return name.join('');
+	return word + name.join('');
+
 }
 
 // message legitimacy functions
@@ -205,6 +206,14 @@ function fix(string) {
 	// rich text
 	return str;
 }
+
+var words;
+
+fs.readFile(__dirname + "/public/assets/words.txt", function(err, data) {
+    if(err) throw err;
+    words = data.toString().split("\n");
+});
+
 
 
 //////// MONITORING /////////

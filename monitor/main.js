@@ -19,6 +19,7 @@ socket.on('disconnect', function(data){
 socket.on('log', function(data){
 	usernames = data.usernames;
 	usersOnline = data.usersOnline
+	$('#users-current').text(usersOnline + " active");
 
 	if(data.id === 'msg')
 		display("", data, 0);
@@ -32,13 +33,12 @@ socket.on('log', function(data){
 		display('offline', data, 1);
 		display('offline', data, 2);
 	}
-	if(data.id === 'rejoin')
-		display('online', data, 1);
 });
 
 socket.on('update', function(data) {
 	usernames = data.usernames;
 	$('#users-current').text(data.online + " active");
+	$('#users').empty();
 });
 
 function display(type, data, c){
@@ -48,6 +48,7 @@ function display(type, data, c){
 			$('#users > .online > .user').each(function () {
 			    if ($(this).text() == usernames[data.user].username) {
 			        $(this).parent().addClass("error").removeClass('online').append($('<span class="time">').text(" " + new Date().toLocaleTimeString()));
+			        updateTable($(this).parent(), data);
 			    }
 			});
 		}
@@ -57,6 +58,7 @@ function display(type, data, c){
 						if(!($(this).find(".info").length))
 							createTable(this, data);
 						else{
+							updateTable(this, data);
 							$(this).find(".info").fadeToggle();
 						}
 					}
@@ -98,6 +100,19 @@ function createTable(pos, data) {
 	$(pos).append(info);
 }
 
+function updateTable(pos, data) {
+	info = $(pos).find(".info");
+	info.empty();
+	info.append("<tr><td><b>time</b></td><td>" + data.date + "</td></tr>");
+	info.append("<tr><td><b>username</b></td><td>" + usernames[data.user].username + "</td></tr>");
+	info.append("<tr><td><b>colour</b></td><td>" + usernames[data.user].colour + "</td></tr>");
+	info.append("<tr><td><b>timeJoined</b></td><td>" + usernames[data.user].timeJoined + "</td></tr>");
+	info.append("<tr><td><b>userJoined</b</td><td>" + usernames[data.user].userJoined + "</td></tr>");
+	info.append("<tr><td><b>ip address</b></td><td>" + usernames[data.user].ip + "</td></tr>");
+	info.append("<tr><td><b>prevMsg</b></td><td>" + usernames[data.user].prevMsg + "</td></tr>");
+	info.append("<tr><td><b>prevMsgTime</b></td><td>" + usernames[data.user].prevMsgTime + "</td></tr>");
+}
+
 function scroll(offset, col){
 	if($(window).height()-50 < $(col)[0].scrollHeight) { // if scrolled to bottom
 		if(offset - $(col).scrollTop() == $(col).outerHeight())
@@ -118,6 +133,8 @@ function parseCommand(){
 	if (m === "restart"){
 		socket.emit('restart');
 	}
-
+	else if (m === "clear"){
+		$("#messages, #log-messages, #usersOnline").empty();
+	}
 	$('#m').val('');
 }
