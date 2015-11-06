@@ -6,6 +6,7 @@ var http = require('http').Server(app);
 // socket io
 var io = require('socket.io')(http);
 
+var fs = require('fs');
 // Route handler, sends index.html when root address is hit.
 app.use(express.static(__dirname + '/public'));
 
@@ -16,6 +17,7 @@ http.listen(8080, function(){
 
 // holds usernames
 var usernames = {};
+var usersOnline = 0;
 // count of users logged in: Object.keys(usernames).length
 
 // socket.io: user connection
@@ -51,8 +53,8 @@ io.on('connection', function(socket){  // listening socket
 					colour: usernames[socket.id].colour,
 					message: msg //nope... no XSS here
 				});
-				usernames[socket.id].prevMsg = msg;
 				log('msg', socket.id, msg);
+				usernames[socket.id].prevMsg = msg;
 			}
 		}
 		usernames[socket.id].prevMsgTime = time;
@@ -62,10 +64,12 @@ io.on('connection', function(socket){  // listening socket
 		if(typeof usernames[socket.id] === 'undefined'){
 			join();
 
+			++usersOnline;
+
 			if(firstJoin)
 				io.to(socket.id).emit("change available");
 
-			log('join', socket.id);
+			log('join', socket.id, 'join');
 		}
 	});
 
@@ -75,7 +79,7 @@ io.on('connection', function(socket){  // listening socket
 			
 			socket.broadcast.emit('leave', {
 				username: usernames[socket.id].prevUsername,
-				numUsers: Object.keys(usernames).length
+				numUsers: usersOnline
 			});
 
 			join();
@@ -87,20 +91,21 @@ io.on('connection', function(socket){  // listening socket
 				log('avchange', socket.id);
 			}, 60000);
 
-			log('rejoin', socket.id);
+			log('rejoin', socket.id, 'rejoin');
 		}
 		else {
 			io.to(socket.id).emit("setname", {
 				username: usernames[socket.id].username,
-				numUsers: Object.keys(usernames).length,
+				numUsers: usersOnline,
 				success: false
 			});
 		}
-		socket.inactiveTimeout = setTimeout(function(){leave();}, 500000);
+		socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 500000);
 	});
 
 	socket.on('leave', function(){
-		leave();
+		if(typeof usernames[socket.id] !== "undefined")
+			leave('leave');
 	});
 	
 	socket.on('change colour', function(colour) {
@@ -131,42 +136,45 @@ io.on('connection', function(socket){  // listening socket
 
 		socket.broadcast.emit('join', {
 			username: usernames[socket.id].username,
-			numUsers: Object.keys(usernames).length
+			numUsers: usersOnline
 		});
 	
 		io.to(socket.id).emit("setname", {
 			username: usernames[socket.id].username,
-			numUsers: Object.keys(usernames).length,
+			numUsers: usersOnline,
 			success: true
 		});
 	}
 
 	// probably put these log statements in context.
 
-	function leave(){
+	function leave(reason){
 		if(usernames[socket.id].userJoined){
-			log('leave', socket.id);
+			log('leave', socket.id, reason);
 
 			resetTimeout(false);
 
-			delete usernames[socket.id];
+			//delete usernames[socket.id];
+			--usersOnline;
 
 			socket.userJoined = false;
 
 			socket.broadcast.emit('leave', {
 				username: socket.username,
-				numUsers: Object.keys(usernames).length
+				numUsers: usersOnline
 			});
 
-			io.to(socket.id).emit("inactive");
-			socket.disconnect();
+			if(reason === 'inactive') {
+				io.to(socket.id).emit("inactive");
+				socket.disconnect();
+			}
 		}
 	}
 
 	function resetTimeout(set) {
 		clearTimeout(socket.inactiveTimeout);
 		if(set)
-			socket.inactiveTimeout = setTimeout(function(){leave();}, 500000);
+			socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 500000);
 	}
 });
 
@@ -212,7 +220,14 @@ mhttp.listen(3000, function(){
 
 
 mio.on('connection', function(socket){
-	socket.emit('update', usernames);
+	socket.emit('update', {
+		usernames: usernames,
+		online: usersOnline
+	});
+
+	socket.on('restart', function(){
+
+	})
 });
 
 function log(id, user, data){
@@ -220,7 +235,9 @@ function log(id, user, data){
 		id: id,
 		user: user,
 		data: data,
-		time: new Date(),
-		usernames: usernames
+		date: new Date(),
+		time: new Date().toLocaleTimeString(),
+		usernames: usernames,
+		usersOnline: usersOnline
 	});
 }

@@ -31,8 +31,11 @@ else
 
 // send leave receipt to server # only for cleanliness
 window.onbeforeunload = function() {
-	if(active)
+	if(active) {
+		active = false;
 		socket.emit('leave');
+		socket.disconnect();
+	}
 }
 
 // on document load

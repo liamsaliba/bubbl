@@ -10,14 +10,21 @@
 	text-decoration: none;
 }
 
+h2 {
+	padding: 5px;
+	width: 100%;
+	background: rgba(0, 0, 0, 0.7);
+	color: white;
+}
+
 #wrap {
 	position: fixed;
 	width: 100%;
 }
 
 #wrap > div {
-	display: inline-block;
-	padding: 8px;
+	position: fixed;
+	height: calc(100% - 50px);
 }
 
 #wrap > div > ul {
@@ -26,28 +33,30 @@
 }
 
 #wrap > div > ul > li {
+	padding: 5px;
+	margin: 5px;
 	list-style-type: none;
+	background: #eee;
 }
 
 #msgs {
-	position: relative;
 	width: 40%;
 }
 
 #logs {
-	position: relative;
-	width: 40%;
-	background: #eee;
+	width: 30%;
+	background: #ddd;
+	left: 40%;
 }
 
 #userlist {
-	position: relative;
-	width: 18%;
+	width: 30%;
+	left: 70%;
 }
 
 #input {
 	position: fixed;
-	height: 60px;
+	height: 55px;
 	width: 100%;
 	bottom: 0;
 	padding: 10px;
@@ -59,21 +68,41 @@ input {
 	padding: 10px;
 	border-radius: 5px;
 	background: white;
-	width: calc(100% - 240px);
+	width: calc(100% - 400px);
 }
 
-#time-current {
+.white {
 	border: none;
 	padding: 8px 10px;
 	border-radius: 5px;
 	background: white;
 }
 
-#users-current {
-	border: none;
-	padding: 8px 10px;
-	border-radius: 5px;
-	background: white;
-	width: 100px;
+.error {
+	background: red !important;
+	color: white;
 }
 
+.online {
+	background: green !important;
+	color: white;
+}
+
+.offline {
+	background: orange !important;
+	color: white;
+}
+
+.time {
+	font-size: 12px;
+}
+
+.user {
+	font-weight: bold;
+}
+
+.info {
+	padding-right: 10px !important;
+	font-size: 13px;
+	display: none;
+}
