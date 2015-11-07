@@ -83,6 +83,12 @@ input {
 	color: white;
 }
 
+.typing {
+	background: black !important;
+	color: white;
+}
+
+
 .online {
 	background: green !important;
 	color: white;

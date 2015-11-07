@@ -1,4 +1,4 @@
-var socket = io.connect("localhost:3000");
+var socket = io.connect("phantom-1:3000");
 
 var usernames = {};
 
@@ -32,6 +32,9 @@ socket.on('log', function(data){
 	if(data.id === 'leave') {
 		display('offline', data, 1);
 		display('offline', data, 2);
+	}
+	if(data.id === 'typing') {
+		display('typing', data, 1);
 	}
 });
 
@@ -78,6 +81,7 @@ function display(type, data, c){
 					if(!($(this).find(".info").length))
 						createTable(this, data);
 					else{
+						updateTable(this, data);
 						$(this).find(".info").fadeToggle();
 					}
 				}
@@ -89,6 +93,7 @@ function display(type, data, c){
 function createTable(pos, data) {
 	info = $("<div class='info'>");
 	info.append("<tr><td><b>time</b></td><td>" + data.date + "</td></tr>");
+	info.append("<tr><td><b>socket id</b></td><td>" + data.user + "</td></tr>");
 	info.append("<tr><td><b>username</b></td><td>" + usernames[data.user].username + "</td></tr>");
 	info.append("<tr><td><b>colour</b></td><td>" + usernames[data.user].colour + "</td></tr>");
 	info.append("<tr><td><b>timeJoined</b></td><td>" + usernames[data.user].timeJoined + "</td></tr>");
@@ -96,6 +101,7 @@ function createTable(pos, data) {
 	info.append("<tr><td><b>ip address</b></td><td>" + usernames[data.user].ip + "</td></tr>");
 	info.append("<tr><td><b>prevMsg</b></td><td>" + usernames[data.user].prevMsg + "</td></tr>");
 	info.append("<tr><td><b>prevMsgTime</b></td><td>" + usernames[data.user].prevMsgTime + "</td></tr>");
+	info.append("<tr><td><b>typing</b></td><td>" + usernames[data.user].typing + "</td></tr>");
 
 	$(pos).append(info);
 }
@@ -104,6 +110,7 @@ function updateTable(pos, data) {
 	info = $(pos).find(".info");
 	info.empty();
 	info.append("<tr><td><b>time</b></td><td>" + data.date + "</td></tr>");
+	info.append("<tr><td><b>socket id</b></td><td>" + data.user + "</td></tr>");
 	info.append("<tr><td><b>username</b></td><td>" + usernames[data.user].username + "</td></tr>");
 	info.append("<tr><td><b>colour</b></td><td>" + usernames[data.user].colour + "</td></tr>");
 	info.append("<tr><td><b>timeJoined</b></td><td>" + usernames[data.user].timeJoined + "</td></tr>");
@@ -111,6 +118,7 @@ function updateTable(pos, data) {
 	info.append("<tr><td><b>ip address</b></td><td>" + usernames[data.user].ip + "</td></tr>");
 	info.append("<tr><td><b>prevMsg</b></td><td>" + usernames[data.user].prevMsg + "</td></tr>");
 	info.append("<tr><td><b>prevMsgTime</b></td><td>" + usernames[data.user].prevMsgTime + "</td></tr>");
+	info.append("<tr><td><b>typing</b></td><td>" + usernames[data.user].typing + "</td></tr>");
 }
 
 function scroll(offset, col){

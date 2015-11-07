@@ -1,7 +1,8 @@
 var socket = io.connect("http://bubbl.chat/");
 socket.emit('join');
 
-var typing = false; //TODO
+var typing = false;
+var users_typing = [];
 
 // set username
 var user_hue = 280;
@@ -15,7 +16,7 @@ var notifications = 0; //for favicon
 var error_timeout; // for error animation
 var clear_timeout;
 var typing_offset = 0; // when typing, for animation (error())
-
+var error_offset = 0;
 // bubbl logo
 var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
 
@@ -89,10 +90,24 @@ $("#m").keydown(function(e){
         // prevent default behavior
         e.preventDefault();
         parseChatBox();
+        socket.emit('typing stop');
+        typing = false;
+        console.log("typing stopped")
     }
     if(e.keyCode == 13 && e.shiftKey && $(this).val().split("\n").length >= 12) { 
         return false;
     }
+});
+
+$('#m').keyup(function(e){
+	if($('#m').val() === "" && typing){
+		typing = false;
+	    socket.emit('typing stop');
+	}
+	else if($('#m').val() !== "" && !typing){
+		typing = true;
+	    socket.emit('typing');
+	}
 });
 
 // Chat box parsing / emoji picker on button press
@@ -219,11 +234,20 @@ socket.on('join', function(data){
 socket.on('leave', function(data){
 	//msg('n l', data.username + " left " + bubbl);
 	$('#online-count').html(data.numUsers + " active");
+	typing_change(false, data.username)
 });
 
 socket.on('error', function(data){
 	error(data);
 	//$("#messages").scrollTop($("#messages")[0].scrollHeight); // scroll to bottom on error
+});
+
+socket.on('typing', function(user){
+	typing_change(true, user);
+});
+
+socket.on('typing stop', function(user){
+	typing_change(false, user);
 });
 
 socket.on('fr', function(){
@@ -289,14 +313,56 @@ function error(m){
 	$('#notifications').append($('<div class="error">').text(m));
 	clearTimeout(error_timeout);
 	clearTimeout(clear_timeout);
-	$('.error:last').animate({bottom: 50 + typing_offset}, 400);
-	$('#messages').animate({bottom: 80 + typing_offset}, 400);
 
-	clear_timeout = setTimeout("$('.error:not(:last)').remove();", 400)
+	error_offset = 30;
+
+	$('.error:last').animate({bottom: 50 + typing_offset}, 200);
+	$('#messages').animate({bottom: 50 + (error_offset + typing_offset)}, 200);
+
+	clear_timeout = setTimeout("$('.error:not(:last)').remove();", 200)
 	error_timeout = setTimeout(function() {
-		$('.error:last').animate({bottom: 0}, 400);
-		$('#messages').animate({bottom: 50 + typing_offset}, 400);
+		error_offset = 0;
+		$('.error:last').animate({bottom: 0}, 200);
+		$('#messages').animate({bottom: 50 + typing_offset}, 200);
 	}, 3000);
+}
+
+function typing_change(state, user){
+	var typing_str;
+	if(state){
+		users_typing.push(user);
+	}
+	if(!state){
+		users_typing.splice(users_typing.indexOf(user));
+	}
+	if(users_typing.length === 0){
+	}
+	else if(users_typing.length === 1)
+		typing_str = users_typing[0];
+	else if(users_typing.length === 2)
+		typing_str = users_typing[0] + " and " + users_typing[1];
+	else {
+		typing_str = users_typing[0];
+		for(i=1; i < users_typing.length - 1; i++){
+			typing_str +=  ", " + users_typing[i]
+		}
+		typing_str += " and " + users_typing[users_typing.length - 1];
+	}
+	
+	$('#typing-users').text(typing_str);
+
+	if(users_typing.length === 0){
+		typing_offset = 0;
+		$('#typing').animate({bottom: 0}, 200);
+		$('#messages').animate({bottom: 50 + error_offset}, 200);
+	}
+	else{
+		typing_offset = 25;
+		$('#typing').animate({bottom: 50}, 200);
+		$('#messages').animate({bottom: 50 + typing_offset + error_offset}, 200);
+		// animate open
+	}
+	
 }
 
 // black info messages

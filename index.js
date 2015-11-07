@@ -102,7 +102,7 @@ io.on('connection', function(socket){  // listening socket
 				success: false
 			});
 		}
-		socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 500000);
+		socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 300000);
 	});
 
 	socket.on('leave', function(){
@@ -117,11 +117,16 @@ io.on('connection', function(socket){  // listening socket
 
 	socket.on('typing', function(msg){
 		//socket.broadcast.emit('back', socket.username); //TODO
-		resetTimeout(true);
+		//resetTimeout(true);
+		usernames[socket.id].typing = true;
+		log('typing', socket.id, 'on');
+		socket.broadcast.emit('typing', usernames[socket.id].username);
 	});
 
 	socket.on('typing stop', function(){
-
+		usernames[socket.id].typing = false;
+		log('typing', socket.id, 'off');
+		socket.broadcast.emit('typing stop', usernames[socket.id].username);
 	});
 
 	function join(){
@@ -133,6 +138,7 @@ io.on('connection', function(socket){  // listening socket
 			ip: socket.request.socket.remoteAddress,
 			prevMsg: '',
 			prevMsgTime: '',
+			typing: true
 		};
 		resetTimeout(true);
 
@@ -140,7 +146,7 @@ io.on('connection', function(socket){  // listening socket
 			username: usernames[socket.id].username,
 			numUsers: usersOnline
 		});
-	
+	 
 		io.to(socket.id).emit("setname", {
 			username: usernames[socket.id].username,
 			numUsers: usersOnline,
@@ -176,7 +182,7 @@ io.on('connection', function(socket){  // listening socket
 	function resetTimeout(set) {
 		clearTimeout(socket.inactiveTimeout);
 		if(set)
-			socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 500000);
+			socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 300000);
 	}
 });
 
