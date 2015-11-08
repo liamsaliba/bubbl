@@ -25,7 +25,6 @@ var usersOnline = 0;
 io.on('connection', function(socket){  // listening socket
 
 	var firstJoin = true;
-	//usernames[socket.id] = {};
 
 	// TODO: IP Blocking
 

@@ -54,6 +54,7 @@
 			<span class="version">bubbl 0.1.027 (2015-11-04)</span>
 			<h2 id="online-count"></h2>
 			<h2 id="room-count">6 bubbl.s</h2>
+			<span id="create-btn">create room</span>
 			<ul id="rooms">
 				<li><span class="room">ThisIsFourteen</span><span class="count">1</span></li>
 				<li><span class="room">BlahBlah</span><span class="count">10</span></li>
@@ -64,6 +65,15 @@
 			</ul>
 			<div id="hue-slider"></div>
 		</div>
+		<div id="users">
+			<ul id="user-list">
+				<li class="online" >+ fries152</li>
+				<li class="offline">&minus; nock2850</li>
+				<li class="online" >+ anise055</li>
+				<li class="online" >+ hawed015</li>
+			</ul>
+		</div>
+
 
 		<div id="msgs">
 			<ul id="messages"></ul>
@@ -73,7 +83,7 @@
 
 		<div id="notifications">
 			<div id="typing">
-				<span id="typing-users">person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, person, </span> is typing...</div>
+				<span id="typing-users"></span> is typing...</div>
 		</div>
 
 		<div id="input">
@@ -85,8 +95,8 @@
 
 		<div id="modal">
 			<div id="disconnect">
-				<h2>oh snap.</h2>
-				something bad happened and we're trying to fix it.  just wait a moment to rejoin.
+				<h2>you've disconnected.</h2>
+				everything is alright, just rejoin when you can.
 				<button class="rejoin">rejoin</button>
 			</div>
 			<div id="inactive">

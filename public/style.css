@@ -116,7 +116,7 @@ img.emoji {
 	position: fixed;
 	width: 130px;
 	right: 0;
-	text-align: right;
+	text-align: center;
 	padding: 5px;
 	padding-top: 55px;
 	font-size: 14px;
@@ -147,6 +147,18 @@ img.emoji {
 	border-top-style: solid;
 	border-width: 1px;
 	padding-top: 3px;
+}
+
+#create-btn {
+	display: inline-block;
+	text-align: center;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 3px;
+	font-size: 12px;
+	padding: 2px 3px;
+	margin: 2px;
+	font-weight: bold;
 }
 
 #rooms {
@@ -181,18 +193,6 @@ img.emoji {
 	margin-left: 3px;
 }
 
-.red {
-	color: #FF0000 !important;
-	-webkit-text-stroke-width: 1px;
-	-webkit-text-stroke-color: lightgray;
-}
-
-.green {
-	color: #009933 !important;
-	-webkit-text-stroke-width: 1px;
-	-webkit-text-stroke-color: lightgray;
-}
-
 #hue-slider { //totally not skidded at all
 	margin: 5px;
 	margin-top: 8px;
@@ -211,8 +211,43 @@ img.emoji {
 	cursor: pointer;
 }
 
+#users {
+	position: fixed;
+	right: 0;
+	bottom: 50px;
+	margin-bottom: 5px;
+	z-index: 6;
+}
 
+#user-list {
+	list-style-type: none;
+	font-size: 11px;
+}
 
+#user-list > li {
+	color: white;
+	padding: 2px 3px;
+	border-radius: 20px;
+	margin-top: 3px;
+	padding-left: 5px;
+	text-align: left;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	border-radius: 10px 0px 0px 10px;
+	-moz-border-radius: 10px 0px 0px 10px;
+	-webkit-border-radius: 10px 0px 0px 10px;
+	border: 0px solid #000000;
+	width: 70px;
+}
+
+.offline {
+	background-color: #FF0000 !important;
+}
+
+.online {
+	background-color: #009933 !important;
+}
 
 
 #msgs {
@@ -253,7 +288,7 @@ img.emoji {
 	-webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
-	max-width: calc(100% - 130px);
+	max-width: calc(100% - 165px);
 }
 
 /*
@@ -294,8 +329,8 @@ img.emoji {
 	padding: 2px;
 	clear: both !important;
 	color: black;
-	width: 70px;
-	margin-right: 5px; 
+	width: 75px;
+	margin-right: 8px; 
 	text-align: right;
 	padding: 9px 0px !important;
 	-webkit-box-shadow: none !important;
@@ -348,6 +383,7 @@ img.emoji {
 	background-color: #FFCC00 !important;
 	font-weight: bold;
 	cursor: pointer;
+	z-index: 5;
 }
 
 
@@ -368,7 +404,7 @@ img.emoji {
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
 	font-size: 14px;
 	overflow: hidden;
-	z-index: -2;
+	z-index: 3;
 }
 
 #typing {
@@ -381,7 +417,7 @@ img.emoji {
 	font-size: 12px;
 	background-color: black !important;
 	color: white;
-	z-index: -1;
+	z-index: 4;
 }
 
 #typing-users {
@@ -407,6 +443,7 @@ img.emoji {
 	padding-right: 10px;
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.8);
 	color: grey;
+	z-index: 10;
 } 
 
 #input textarea {

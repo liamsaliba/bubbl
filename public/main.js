@@ -17,6 +17,7 @@ var error_timeout; // for error animation
 var clear_timeout;
 var typing_offset = 0; // when typing, for animation (error())
 var error_offset = 0;
+var newmsg_offset = 0;
 // bubbl logo
 var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=\"10px\" style=\"padding-left: 2px;\"></object>";
 
@@ -59,6 +60,10 @@ $(window).on('focus', function() {
 	Tinycon.setBubble();
 });
 
+$(window).on('blur', function() {
+	socket.emit('typing stop');
+})
+
 // tips
 setTimeout("$('#change-tip').animate({right: 140}, 800);", 500);
 setTimeout("$('#menu-tip').animate({right: 40}, 800);", 500);
@@ -90,9 +95,6 @@ $("#m").keydown(function(e){
         // prevent default behavior
         e.preventDefault();
         parseChatBox();
-        socket.emit('typing stop');
-        typing = false;
-        console.log("typing stopped")
     }
     if(e.keyCode == 13 && e.shiftKey && $(this).val().split("\n").length >= 12) { 
         return false;
@@ -121,7 +123,8 @@ $('#sendbtn').click(function(){
 
 // button does nothing
 $('#input').submit(function(){
-		return false;
+	socket.emit('typing stop');
+	return false;
 });
 
 function parseChatBox(){
@@ -211,8 +214,10 @@ function parseChatBox(){
 		socket.emit('chat message', m);
 	
 	// scroll to bottom
-	$("#messages").scrollTop($("#messages")[0].scrollHeight);
+	$("#messages").stop().animate({scrollTop: $("#messages")[0].scrollHeight }, "fast");
 	$("#newmsg").animate({bottom: "0px"}, "fast");
+	newmsg_offset = 0;
+	updateAnimation();
 
 	// reset box
 	$('#m').val('');
@@ -239,7 +244,6 @@ socket.on('leave', function(data){
 
 socket.on('error', function(data){
 	error(data);
-	//$("#messages").scrollTop($("#messages")[0].scrollHeight); // scroll to bottom on error
 });
 
 socket.on('typing', function(user){
@@ -315,15 +319,15 @@ function error(m){
 	clearTimeout(clear_timeout);
 
 	error_offset = 30;
-
+	$('#messages').stop().animate({bottom: 50 + error_offset + typing_offset, scrollTop: $("#messages")[0].scrollHeight}, 200);
+	$('#users').animate({bottom: 50 + error_offset + typing_offset + newmsg_offset}, 200);
 	$('.error:last').animate({bottom: 50 + typing_offset}, 200);
-	$('#messages').animate({bottom: 50 + (error_offset + typing_offset)}, 200);
 
 	clear_timeout = setTimeout("$('.error:not(:last)').remove();", 200)
 	error_timeout = setTimeout(function() {
 		error_offset = 0;
 		$('.error:last').animate({bottom: 0}, 200);
-		$('#messages').animate({bottom: 50 + typing_offset}, 200);
+		updateAnimation();
 	}, 3000);
 }
 
@@ -354,15 +358,20 @@ function typing_change(state, user){
 	if(users_typing.length === 0){
 		typing_offset = 0;
 		$('#typing').animate({bottom: 0}, 200);
-		$('#messages').animate({bottom: 50 + error_offset}, 200);
+		updateAnimation();
 	}
 	else{
 		typing_offset = 25;
 		$('#typing').animate({bottom: 50}, 200);
-		$('#messages').animate({bottom: 50 + typing_offset + error_offset}, 200);
-		// animate open
+		if(!($(window).height()-50 < $("#messages")[0].scrollHeight))
+			$('#messages').animate({bottom: 50 + typing_offset + error_offset}, 200);
+		$('#users').stop().animate({bottom: 50 + typing_offset + error_offset + newmsg_offset/2}, 200);
 	}
-	
+}
+
+function updateAnimation(){
+	$('#messages').animate({bottom: 50 + typing_offset + error_offset}, 200);
+	   $('#users').animate({bottom: 50 + typing_offset + error_offset + newmsg_offset}, 200);
 }
 
 // black info messages
@@ -427,6 +436,8 @@ function isEnabled(id){
 $("#messages").scroll(function(){
 	if($("#messages")[0].scrollHeight - $("#messages").scrollTop() - $("#messages").outerHeight() < 1){
 		$("#newmsg").animate({bottom: "0px"}, "fast");
+		newmsg_offset = 0;
+		updateAnimation();
 	}
 });
 
@@ -434,16 +445,18 @@ $("#messages").scroll(function(){
 function scroll(offset){
 	if($(window).height()-50 < $("#messages")[0].scrollHeight) { // if scrolled to bottom
 		if(offset - $("#messages").scrollTop() == $("#messages").outerHeight())
-			$("#messages").scrollTop($("#messages")[0].scrollHeight);
+			$("#messages").animate({scrollTop: $("#messages")[0].scrollHeight }, "slow");
 		else {
-			$("#newmsg").animate({bottom: "60px"}, "fast"); //new message indicator
+			$("#newmsg").animate({bottom: 60}, "fast"); //new message indicator
+			newmsg_offset = 50;
+			updateAnimation();
 		}
 	}
 }
 
 // click on indicator = scroll bottom
 $("#newmsg").click(function(){
-	$("#messages").scrollTop($("#messages")[0].scrollHeight);
+	$("#messages").animate({scrollTop: $("#messages")[0].scrollHeight }, "slow");
 });
 
 // manage colour
