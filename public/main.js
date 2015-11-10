@@ -234,12 +234,14 @@ socket.on('chat message', function(data){
 socket.on('join', function(data){
 	//msg('n j', data.username + " joined " + bubbl);  //TODO, add join / leave users under bubbl logo
 	$('#online-count').html(data.numUsers + " active");
+	joinBadge(data.username);
 });
 
 socket.on('leave', function(data){
 	//msg('n l', data.username + " left " + bubbl);
 	$('#online-count').html(data.numUsers + " active");
 	typing_change(false, data.username)
+	leaveBadge(data.username);
 });
 
 socket.on('error', function(data){
@@ -558,4 +560,36 @@ function getTime() {
     	return d.getHours() + ":0" + d.getMinutes();
     else
     	return d.getHours() + ":" + d.getMinutes();
+}
+
+function joinBadge(username) {
+	$('#user-list').prepend($('<li class="online">').html("+ " + username).animate({right: 140}, 'fast'));
+
+	setTimeout(
+		function(){
+			$('.online:contains("' + username + '")').animate({
+				right: '-150px'
+			}, 	{
+				duration: 400,
+				complete: function() {
+					$(this).remove();
+				}
+			});
+		}, 5000);
+}
+
+function leaveBadge(username) {
+	$('#user-list').prepend($('<li class="offline">').html("&minus; " + username).animate({right: 140}, 'fast'));
+
+	setTimeout(
+		function(){
+			$('.offline:contains("' + username + '")').animate({
+				right: '-150px'
+			}, 	{
+				duration: 400,
+				complete: function() {
+					$(this).remove();
+				}
+			});
+		}, 5000);
 }

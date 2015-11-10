@@ -77,8 +77,10 @@ io.on('connection', function(socket){  // listening socket
 		clearTimeout(socket.inactiveTimeout);
 		if ((Math.floor((new Date() - usernames[socket.id].timeJoined) / 60000) > 0 || firstJoin) && usernames[socket.id].userJoined) {
 			
+			usernames[socket.id].prevUsername = usernames[socket.id].username;
+
 			socket.broadcast.emit('leave', {
-				username: usernames[socket.id].prevUsername,
+				username: usernames[socket.id].username,
 				numUsers: usersOnline
 			});
 
@@ -162,12 +164,10 @@ io.on('connection', function(socket){  // listening socket
 
 			resetTimeout(false);
 
-			//delete usernames[socket.id];
-
 			socket.userJoined = false;
 
 			socket.broadcast.emit('leave', {
-				username: socket.username,
+				username: usernames[socket.id].username,
 				numUsers: usersOnline
 			});
 

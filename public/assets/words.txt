@@ -8,7 +8,6 @@ abas
 abase
 abash
 abate
-abba
 abbas
 abbe
 abbey
@@ -2330,9 +2329,6 @@ diced
 dicer
 dices
 dicey
-dick
-dicks
-dicky
 dicot
 dicta
 dictu
@@ -2363,7 +2359,6 @@ digs
 dike
 diked
 dikes
-dildo
 dill
 dills
 dilly
@@ -9172,7 +9167,6 @@ stung
 stunk
 stuns
 stunt
-stupid
 stye
 styes
 style
@@ -10140,7 +10134,6 @@ using
 usual
 usurp
 usury
-utah
 utas
 uteri
 utero
@@ -10956,7 +10949,7 @@ zits
 zloty
 zoea
 zoic
-zombi
+zombie
 zona
 zonal
 zone
