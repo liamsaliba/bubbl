@@ -61,7 +61,7 @@ img.emoji {
 	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
-	  cursor: pointer;
+	cursor: pointer;
 }
 
 #float-username {
@@ -73,13 +73,64 @@ img.emoji {
 	padding-left: 12px;
 	color: white;
 	z-index: 8;
+	background-color: hsl(280, 100%, 40%);
+
 	-webkit-border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
 	border-bottom-left-radius: 10px;
-	background-color: hsl(280, 100%, 40%);
 	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+}
+
+#float-room {
+	text-align: left;
+	display: inline-block;
+	position: fixed;
+	width: 120px;
+	height: 30px;
+	right: 0;
+	top: 50px;
+	color: white;
+	background-color: hsl(280, 100%, 50%);
+	z-index: 9;
+	padding-right: 6px;
+	padding-left: 6px;
+
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	border-bottom-left-radius: 10px;
+	-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+}
+
+#current-count {
+	display: table;
+	color: black;
+	background: white;
+	border-radius: 5px;
+	padding: 2px 2px;
+	font-size: 10px;
+	text-align: center;
+	min-width: 17px;
+	margin-left: 90px;
+	margin-top: -18px !important;
+}
+
+#room-name {
+	color: white;
+	background: none;
+	width: 80px;
+	height: 25px;
+	border: none;
+	border-color: white;
+	border-bottom-style: solid;
+	border-width: 1px;
+	resize: none;
+	text-align: center;
+	padding-top: 5px;
+	margin-left: 2px;
 }
 
 .changable {
@@ -122,7 +173,7 @@ img.emoji {
 	font-size: 14px;
 	background-color: hsla(280, 100%, 30%, 0.7);
 	z-index: 9;
-
+	size: 10px;
 	-webkit-border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
 	border-bottom-left-radius: 10px;
@@ -141,24 +192,25 @@ img.emoji {
 
 #float-panel > h2 {
 	padding-left: 3px;
-	margin-top: 3px;
 	font-size: 19px;
 	text-align: center;
-	border-top-style: solid;
-	border-width: 1px;
 	padding-top: 3px;
 }
 
-#create-btn {
+.btn {
 	display: inline-block;
 	text-align: center;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 3px;
-	font-size: 12px;
+	font-size: 13px;
 	padding: 2px 3px;
 	margin: 2px;
 	font-weight: bold;
+}
+
+.btn:hover{
+	background-color: rgba(255,255,255,0.2);
 }
 
 #rooms {
@@ -167,6 +219,7 @@ img.emoji {
 	padding-bottom: 6px;
 	border-bottom-style: solid;
 	border-width: 1px;
+	margin-bottom: 5px;
 }
 
 #rooms li {
@@ -176,9 +229,7 @@ img.emoji {
 }
 
 .room {
-	float: left;
-	width: 85px;
-	text-align: right;
+	text-align: left;
 }
 
 .count {
@@ -405,7 +456,7 @@ img.emoji {
 	box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.5);
 	font-size: 14px;
 	overflow: hidden;
-	z-index: 3;
+	z-index: 4;
 }
 
 #typing {
@@ -418,7 +469,7 @@ img.emoji {
 	font-size: 12px;
 	background-color: black !important;
 	color: white;
-	z-index: 4;
+	z-index: 3;
 }
 
 #typing-users {

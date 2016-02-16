@@ -40,6 +40,7 @@
 		<script src="ex/color2color.js"></script>
 		<script src="//twemoji.maxcdn.com/twemoji.min.js"></script>
 		<script src="ex/tinycon.min.js"></script>
+		<!--script src="ex/autosize.js"></script!-->
 	</head>
 	<body>
 		<div id="top-gradient"></div>
@@ -48,23 +49,28 @@
 			<img id="logo" src="/assets/i/bubbl.png" height="35" alt="bubbl">
 		</div>
 		<div id="float-username"></div>
-		<span id="change-tip">change username? &uarr;</span>
-		<span id="menu-tip">open menu &uarr;</span>
-		<div id="float-panel">
-			<span class="version">bubbl 0.1.027 (2015-11-04)</span>
-			<h2 id="online-count"></h2>
-			<h2 id="room-count">6 bubbl.s</h2>
-			<span id="create-btn">create room</span>
-			<ul id="rooms">
-				<li><span class="room">ThisIsFourteen</span><span class="count">1</span></li>
-				<li><span class="room">BlahBlah</span><span class="count">10</span></li>
-				<li><span class="room">img</span><span class="count">600</span></li>
-				<li><span class="room">LOLthisStatic</span><span class="count">25</span></li>
-				<li><span class="room">HaventCoded</span><span class="count">6969</span></li>
-				<li><span class="room">ThisInYet</span><span class="count">8008</span></li>
-			</ul>
-			<div id="hue-slider"></div>
+		<div id="float-room">
+			<textarea id="room-name" autocomplete="off" placeholder="room name" rows="1" maxlength="10">global</textarea>
+			<span id="current-count">1</span>
 		</div>
+		<span id="change-tip">open menu &rarr;</span>
+		<div id="float-panel">
+			<h2 id="room-count"><b>6</b> bubbl.s</h2>
+			<span class="btn" id="create-room">create bubbl.</span>
+			<ul id="rooms">
+				<li><span class="room">global</span> <span class="count">1</span></li>
+				<li><span class="room">room2</span> <span class="count">10</span></li>
+				<li><span class="room">room3</span> <span class="count">600</span></li>
+				<li><span class="room">room4</span> <span class="count">25</span></li>
+				<li><span class="room">room5</span> <span class="count">6969</span></li>
+				<li><span class="room">room6</span> <span class="count">8008</span></li>
+			</ul>
+			<div id="btn-wrap"><span class="btn" id="help">help</span><span class="btn" id="settings">settings</span></div>
+			<div id="hue-slider"></div>
+			<span class="version">bubbl.α by Liam Saliba</span>
+			<span class="version">α0.1.035a / 2016-02-16a</span>
+		</div>
+
 		<div id="users">
 			<ul id="user-list">
 				<li></li>

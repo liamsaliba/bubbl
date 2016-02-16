@@ -298,9 +298,7 @@ amus
 amuse
 amyl
 amyls
-an
 anadyr
-anal
 anas
 anchor
 and
@@ -351,7 +349,6 @@ antler
 ants
 antsy
 anubis
-anus
 anvil
 any
 anyone
@@ -432,8 +429,6 @@ arras
 array
 arrive
 arrow
-arse
-arses
 arson
 arts
 artsy
@@ -464,11 +459,8 @@ asp
 aspen
 aspic
 asps
-ass
 assai
 assay
-assed
-asses
 asset
 assist
 assure
@@ -2063,8 +2055,6 @@ culpa
 cult
 cults
 cumin
-cunt
-cunts
 cup
 cupid
 cuppa
@@ -2496,11 +2486,6 @@ door
 doors
 doozy
 dopa
-dope
-doped
-doper
-dopes
-dopey
 dopy
 dore
 dork
@@ -3099,8 +3084,6 @@ fears
 feast
 feat
 feats
-fecal
-feces
 feck
 feds
 feeb
@@ -3737,9 +3720,6 @@ gimbal
 gimel
 gimlet
 gimme
-gimp
-gimps
-gimpy
 gin
 ginger
 gink
@@ -4387,9 +4367,6 @@ holk
 holly
 holm
 holon
-holp
-hols
-holt
 holy
 home
 homed
@@ -4438,7 +4415,6 @@ horde
 horn
 hornet
 horns
-horny
 horse
 horsy
 hose
@@ -7266,7 +7242,6 @@ pong
 pons
 pony
 pooch
-pood
 poodle
 pooey
 poof
@@ -7275,8 +7250,6 @@ poohs
 pool
 pools
 poon
-poop
-poops
 poor
 poos
 pop
@@ -7294,8 +7267,6 @@ porgy
 pork
 porks
 porky
-porn
-porno
 port
 portal
 ports
@@ -7420,8 +7391,6 @@ pssst
 psst
 psych
 ptui
-pubes
-pubic
 pubis
 pubs
 puce
@@ -7491,7 +7460,6 @@ push
 pusher
 pushy
 puss
-pussy
 put
 puts
 putt
@@ -7536,7 +7504,6 @@ quay
 quays
 quebec
 queen
-queer
 quell
 query
 quest
@@ -7639,10 +7606,7 @@ ranks
 rant
 rants
 rap
-rape
-raped
-raper
-rapes
+rapper
 rapid
 rapier
 raps
@@ -7975,9 +7939,6 @@ room
 rooms
 roomy
 roost
-root
-roots
-rooty
 rope
 roped
 roper
@@ -8055,8 +8016,6 @@ rumba
 rumen
 rummy
 rumor
-rump
-rumps
 rums
 run
 rune
@@ -8335,7 +8294,6 @@ sell
 sells
 sels
 seme
-semen
 semi
 semis
 send
@@ -8343,6 +8301,7 @@ sends
 sene
 senior
 senor
+senpai
 sense
 sensor
 sent
@@ -8378,10 +8337,6 @@ sewed
 sewer
 sewn
 sews
-sexed
-sexes
-sext
-sexy
 shack
 shad
 shade
@@ -8390,7 +8345,6 @@ shads
 shady
 shaft
 shag
-shags
 shah
 shahs
 shake
@@ -8403,7 +8357,6 @@ shalt
 sham
 shame
 shams
-shank
 shape
 shard
 share
@@ -8608,7 +8561,6 @@ skas
 skat
 skate
 skee
-skeet
 skeg
 skein
 skep
@@ -8648,8 +8600,6 @@ skytop
 slab
 slabs
 slack
-slag
-slags
 slain
 slake
 slam
@@ -8726,8 +8676,6 @@ slur
 slurp
 slurs
 slush
-slut
-sluts
 slyer
 slyly
 smack
@@ -9146,7 +9094,6 @@ strew
 stride
 strike
 string
-strip
 strobe
 stroke
 strong
@@ -9291,8 +9238,6 @@ swoon
 swoop
 swop
 sword
-swore
-sworn
 swot
 swum
 swung
@@ -9467,9 +9412,6 @@ teed
 teel
 teem
 teems
-teen
-teens
-teeny
 tees
 teeth
 teff
@@ -9656,7 +9598,6 @@ tip
 tipi
 tippy
 tips
-tipsy
 tire
 tired
 tires
@@ -10117,7 +10058,6 @@ urgent
 urger
 urges
 uric
-urine
 urns
 urps
 ursa
@@ -10339,7 +10279,6 @@ vugg
 vugh
 vugs
 vulcan
-vulva
 vying
 wabs
 wack
@@ -10398,7 +10337,6 @@ wands
 wane
 waned
 wanes
-wank
 wanly
 wanna
 wans

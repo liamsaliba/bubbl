@@ -66,27 +66,39 @@ $(window).on('blur', function() {
 
 // tips
 setTimeout("$('#change-tip').animate({right: 140}, 800);", 500);
-setTimeout("$('#menu-tip').animate({right: 40}, 800);", 500);
 setTimeout("$('#change-tip').animate({right: -140}, 800);", 10000);
-setTimeout("$('#menu-tip').animate({right: -140}, 800);", 10000);
 
 // logo click menu
 $('#logo').click(function(){
 	$('#logo').animate({height: '30px'}, "fast");
-	 $('#menu-tip').animate({opacity: 0}, 800);
+	 $('#change-tip').animate({opacity: 0}, 800);
 	if($('#float-panel').css('display') === 'none'){
 		$('#float-panel').stop(true, true).fadeIn({ duration: 400, queue: false }).css('display', 'none').slideDown(400);
-	} else
+		$('#float-room').animate({top: 314.313}, 400);
+		console.log($('#float-panel').height());
+	} else {
     	$('#float-panel').stop(true, true).fadeOut({ duration: 400, queue: false }).slideUp(400);
+    	$('#float-room').animate({top: 50}, 400);
+    }
     $('#logo').animate({height: '35px'}, "fast");
 });
 
 // set new username when click on username box
 $('#float-username').click(function(){
 	socket.emit("rejoin");
-	$('#change-tip').fadeOut();
-	$("#float-username").css("background-color", colours.forty); //40
+	$("#float-username").css("background-color", colours.fortyf); //45
 });
+
+// room textbox
+$("#room-name").keydown(function(e){
+	if (e.keyCode == 13){
+		e.preventDefault();
+		parseRoomBox();
+	}
+});
+
+//TODO: auto refill room name textbox upon blur
+//$("#room-name").on('blur', function)
 
 // expanding text area, shift-enter
 $("#m").keydown(function(e){
@@ -126,6 +138,10 @@ $('#input').submit(function(){
 	socket.emit('typing stop');
 	return false;
 });
+
+function parseRoomBox(){
+	$("#m").focus();
+}
 
 function parseChatBox(){
 	// remove white space, make html safe.
@@ -233,13 +249,13 @@ socket.on('chat message', function(data){
 
 socket.on('join', function(data){
 	//msg('n j', data.username + " joined " + bubbl);  //TODO, add join / leave users under bubbl logo
-	$('#online-count').html(data.numUsers + " active");
+	$('#current-count').html(data.numUsers);
 	joinBadge(data.username);
 });
 
 socket.on('leave', function(data){
 	//msg('n l', data.username + " left " + bubbl);
-	$('#online-count').html(data.numUsers + " active");
+	$('#current-count').html(data.numUsers);
 	typing_change(false, data.username)
 	leaveBadge(data.username);
 });
@@ -272,7 +288,7 @@ socket.on('setname', function(data){
 		setTimeout("$('#float-username').html(username);", 400);
 		document.title = 'bubbl. ' + username;
 		$('#float-username').animate({right: '130px'}, "slow");;
-		$('#online-count').html(data.numUsers + " active");
+		$('#current-count').html(data.numUsers);
 	}
 	else {
 		error("you need to wait a minute to change your username")
@@ -316,6 +332,9 @@ socket.on("change available", function(){
 
 // red error messages on screen bottom
 function error(m){
+	if(m == ""){
+		return;
+	} 
 	$('#notifications').append($('<div class="error">').text(m));
 	clearTimeout(error_timeout);
 	clearTimeout(clear_timeout);
@@ -473,6 +492,7 @@ function change_color(hue){
 		seventy: "hsl(" + (user_hue) + ", 100%, 70%)",
 		sixty: "hsl(" + (user_hue) + ", 100%, 60%)",
 		fifty: "hsl(" + (user_hue) + ", 100%, 50%)",
+		fortys: "hsl(" + (user_hue) + ", 100%, 42%)",
 		fortyf: "hsl(" + (user_hue) + ", 100%, 45%)",
 		forty: "hsl(" + (user_hue) + ", 100%, 40%)",
 		thirty: "hsl(" + (user_hue) + ", 100%, 30%)",
@@ -481,10 +501,11 @@ function change_color(hue){
 
 	$("#input #m").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
 	$("#float-logo, #sendbtn").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //50
-	$("#float-panel").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fifty)}); //45
-	$("#float-username").css({"background-color": colours.forty, "color": idealTextColor(colours.fifty)}); //40
+	$("#float-panel").css({"background-color": colours.fortys, "color": idealTextColor(colours.fifty)}); //45
+	$("#float-username").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fifty)}); //40
+	$("#float-room").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fifty)}); //40
 	$("#input").css({"background-color": colours.twenty, "color": idealTextColor(colours.twenty)}); //20
-
+	$("#room-name").css({"color": idealTextColor(colours.fifty), "border-color": idealTextColor(colours.fifty)});
 	// Text colour
 	$("#float-panel > h2, #users li, .version").css("color", idealTextColor(colours.fifty));
 

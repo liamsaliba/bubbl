@@ -15,10 +15,17 @@ http.listen(8080, function(){
 	console.log("Public server started, listening on port 8080 (public: 80)");
 });
 
-// holds usernames
+// object storing usernames
 var usernames = {};
 var usersOnline = 0;
 // count of users logged in: Object.keys(usernames).length
+
+// words for username generation
+var words;
+fs.readFile(__dirname + "/public/assets/words.txt", function(err, data) {
+    if(err) throw err;
+    words = data.toString().split("\n");
+});
 
 // socket.io: user connection
 // TODO: rewrite a lot of this so most of the code is outside of io.on
@@ -33,11 +40,11 @@ io.on('connection', function(socket){  // listening socket
 		msg = fix(data.trim());
 		time = new Date();
 		if(usernames[socket.id].userJoined) {
-			if(msg === "") {
-				io.to(socket.id).emit('error', "you need to type something to say something");
+			if(msg === "") { // they didn't type anything, silent error
+				io.to(socket.id).emit('error', "");
 				log('error', socket.id, "blank");
 			}
-			else if(msg === usernames[socket.id].prevMsg && (time - usernames[socket.id].prevMsgTime < 4000)) {
+			else if(msg === usernames[socket.id].prevMsg && (time - usernames[socket.id].prevMsgTime < 3000)) {
 				io.to(socket.id).emit('error', "you just said that");
 				log('error', socket.id, "repeat");
 			}
@@ -181,7 +188,7 @@ io.on('connection', function(socket){  // listening socket
 	function resetTimeout(set) {
 		clearTimeout(socket.inactiveTimeout);
 		if(set)
-			socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 300000);
+			socket.inactiveTimeout = setTimeout(function(){leave('inactive');}, 3000000);
 	}
 });
 
@@ -211,14 +218,6 @@ function fix(string) {
 	// rich text
 	return str;
 }
-
-var words;
-
-fs.readFile(__dirname + "/public/assets/words.txt", function(err, data) {
-    if(err) throw err;
-    words = data.toString().split("\n");
-});
-
 
 
 //////// MONITORING /////////
