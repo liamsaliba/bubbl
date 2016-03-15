@@ -240,6 +240,7 @@ along
 aloof
 aloud
 alow
+alpaca
 alpha
 alps
 also

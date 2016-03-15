@@ -166,6 +166,7 @@ img.emoji {
 	display: none;
 	position: fixed;
 	width: 130px;
+	top: -1000px;
 	right: 0;
 	text-align: center;
 	padding: 5px;
@@ -210,7 +211,7 @@ img.emoji {
 }
 
 .btn:hover{
-	background-color: rgba(255,255,255,0.2);
+	background-color: rgba(255,255,255,0.4);
 }
 
 #rooms {
@@ -244,22 +245,35 @@ img.emoji {
 	margin-left: 3px;
 }
 
-#hue-slider { //totally not skidded at all
+.slider{
 	margin: 5px;
 	margin-top: 8px;
+	cursor: pointer;
+}
+
+.slider .ui-slider-range {
+	background: transparent;
+	border-width: 3px;
+	cursor: pointer;
+}
+
+#hue-slider { 
 	background: -moz-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
     background: -ms-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
     background: -o-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
     background: -webkit-gradient(linear, left, right, from(#ff0000), color-stop(0.17, #ffff00), color-stop(0.33, #00ff00), color-stop(0.5, #00ffff), color-stop(0.67, #0000ff), color-stop(0.83, #ff00ff), to(#ff0000));
     background: -webkit-linear-gradient(left, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
-    background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
-    cursor: pointer;
+    background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);   
 }
 
-#hue-slider .ui-slider-range {
-	background: transparent;
-	border-width: 3px;
-	cursor: pointer;
+
+
+#gamma-slider {
+background: rgb(255,255,255); /* Old browsers */
+background: -moz-linear-gradient(left,  rgba(255,255,255,1) 0%, rgba(0,0,0,1) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(left,  rgba(255,255,255,1) 0%,rgba(0,0,0,1) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to right,  rgba(255,255,255,1) 0%,rgba(0,0,0,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
 }
 
 #users {
@@ -352,7 +366,7 @@ img.emoji {
 	display: block;
 	padding: 6px 8px !important;
 	clear: both !important;
-	background-color: black !important;
+	background-color: black;
 	font-size: 9pt !important;
 	color: white;
 }
@@ -549,6 +563,7 @@ img.emoji {
 	background: rgba(0, 0, 0, 0.9);
 	z-index: 1000;
 	display: none;
+	color: black;
 }
 
 #disconnect, #inactive {

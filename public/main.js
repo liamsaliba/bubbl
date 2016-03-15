@@ -1,11 +1,10 @@
-var socket = io.connect("http://bubbl.chat/");
+var socket = io.connect("localhost:8080"); //http://bubbl.chat/ OR localhost:8080
 socket.emit('join');
 
 var typing = false;
 var users_typing = [];
 
 // set username
-var user_hue = 280;
 var username = "";
 var prev_msg_username; // used for '.same'
 var prev_msg = "."; // to be used for spam protection
@@ -23,13 +22,29 @@ var bubbl = "<object data=\"/assets/i/bubbl.svg\" type=\"image/svg+xml\" height=
 
 var colours = {}; // these are defined in the colour section.
 
-// Talking TO server
-
 // get colour from cookie
-if(getCookie("hue") !== "")
-	change_color(getCookie("hue"));
-else
-	change_color(280);
+var user_gamma = getCookie("gamma");
+var user_hue = getCookie("hue");
+if(user_hue == "")
+	user_hue = 280;
+if(user_gamma == "")
+	user_gamma = 0;
+
+var gammaColour = "hsl(0, 0%, " + (100 - user_gamma) + "%)";
+
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split('; ');
+    console.log(document.cookie);
+    console.log(document.cookie.split("; "));
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
+}
 
 // send leave receipt to server # only for cleanliness
 window.onbeforeunload = function() {
@@ -58,6 +73,7 @@ $(document).ready(function(){
 $(window).on('focus', function() {
 	notifications = 0;
 	Tinycon.setBubble();
+	setTitle();
 });
 
 $(window).on('blur', function() {
@@ -67,18 +83,19 @@ $(window).on('blur', function() {
 // tips
 setTimeout("$('#change-tip').animate({right: 140}, 800);", 500);
 setTimeout("$('#change-tip').animate({right: -140}, 800);", 10000);
+$('#float-panel').stop(true, true).animate({top: -10 - ($("#float-panel").height())}, 600);
 
 // logo click menu
 $('#logo').click(function(){
-	$('#logo').animate({height: '30px'}, "fast");
-	 $('#change-tip').animate({opacity: 0}, 800);
-	if($('#float-panel').css('display') === 'none'){
-		$('#float-panel').stop(true, true).fadeIn({ duration: 400, queue: false }).css('display', 'none').slideDown(400);
-		$('#float-room').animate({top: 314.313}, 400);
-		console.log($('#float-panel').height());
+	$('#logo').stop(true, true).animate({height: '30px'}, "fast");
+	 $('#change-tip').stop(true, true).animate({opacity: 0}, 800);
+	if($('#float-panel').css('display') == 'none'){
+		$('#float-panel').stop(true, true).css({"display": "inline-block"}).animate({top: 0}, 600);
+		$('#float-room').stop(true, true).animate({top: 60 + $("#float-panel").height()}, 600);
 	} else {
-    	$('#float-panel').stop(true, true).fadeOut({ duration: 400, queue: false }).slideUp(400);
-    	$('#float-room').animate({top: 50}, 400);
+    	$('#float-panel').stop(true, true).animate({top: -10 - ($("#float-panel").height())}, 600);
+    	$('#float-room').stop(true, true).animate({top: 50}, 600);
+    	setTimeout('$("#float-panel").css({"display": "none"});', 800);
     }
     $('#logo').animate({height: '35px'}, "fast");
 });
@@ -89,6 +106,7 @@ $('#float-username').click(function(){
 	$("#float-username").css("background-color", colours.fortyf); //45
 });
 
+
 // room textbox
 $("#room-name").keydown(function(e){
 	if (e.keyCode == 13){
@@ -98,7 +116,9 @@ $("#room-name").keydown(function(e){
 });
 
 //TODO: auto refill room name textbox upon blur
-//$("#room-name").on('blur', function)
+$("#room-name").on('blur', function(e){
+	$("#room-name").val("global")
+});
 
 // expanding text area, shift-enter
 $("#m").keydown(function(e){
@@ -151,75 +171,8 @@ function parseChatBox(){
 	if (m.charAt(0) === "!"){
 		prev_msg_username = false;
 
-		if(m === "!clear")
+		if(m === "!clear" || m === "!c")
 			$("#messages").empty();
-		// !h
-		else if ((m.charAt(1) === "h" && m.substring(2) === " ") && !isNaN(m.substring(3))){
-			change_color(m.substring(3));
-			info("successfully changed your hue to " + m.substring(3));
-		} // !c
-		else if (m.charAt(1) === "c" && m.substring(3) !== ""){
-			switch (m.substring(3)){
-				case 'purple':
-				case 'reset':
-				case 'default':
-					change_color(280);
-					//info("successfully changed your colour to purple");
-					break;
-				case 'red':
-					change_color(0);
-					//info("successfully changed your colour to red");
-					break;
-				case 'orange':
-					change_color(25);
-					//info("successfully changed your colour to orange");
-					break;
-				case 'gold':
-					change_color(45);
-					//info("successfully changed your colour to gold");
-					break;
-				case 'yellow':
-					change_color(60);
-					//info("successfully changed your colour to yellow");
-					break;
-				case 'lime':
-					change_color(80);
-					//info("successfully changed your colour to lime");
-					break;
-				case 'green':
-					change_color(100);
-					//info("successfully changed your colour to green");
-					break;
-				case 'turquoise':
-					change_color(150);
-					//info("successfully changed your colour to turquoise");
-					break;
-				case 'aqua': 
-					change_color(175);
-					//info("successfully changed your colour to aqua");
-					break;
-				case 'sky':
-					change_color(200);
-					//info("successfully changed your colour to sky");
-					break;
-				case 'blue':
-					change_color(240);
-					//info("successfully changed your colour to blue");
-					break;
-				case 'magenta':
-					change_color(310);
-					//info("successfully changed your colour to magenta");
-					break;
-				case 'pink':
-					change_color(330);
-					//info("successfully changed your colour to pink");
-					break;
-				default:
-					error("invalid colour. try a number or colour name.");
-						break;
-			}
-			$("#hue-slider").slider("value", user_hue);
-		}
 		else
 			error("invalid command. use \\ to escape ! commands.");
 	} 
@@ -248,7 +201,7 @@ socket.on('chat message', function(data){
 });
 
 socket.on('join', function(data){
-	//msg('n j', data.username + " joined " + bubbl);  //TODO, add join / leave users under bubbl logo
+	//msg('n j', data.username + " joined " + bubbl);
 	$('#current-count').html(data.numUsers);
 	joinBadge(data.username);
 });
@@ -286,7 +239,7 @@ socket.on('setname', function(data){
 		username = data.username;
 		$('#float-username').animate({right: 0}, "slow");
 		setTimeout("$('#float-username').html(username);", 400);
-		document.title = 'bubbl. ' + username;
+		setTitle();
 		$('#float-username').animate({right: '130px'}, "slow");;
 		$('#current-count').html(data.numUsers);
 	}
@@ -325,7 +278,7 @@ $(".rejoin").click(function(){
 
 // when username change is available, change bg colour
 socket.on("change available", function(){
-	$("#float-username").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //40
+	$("#float-username").css({"background-color": colours.fifty, "color": idealTextColour(colours.fifty)}); //40
 	setTimeout("$('#change-tip').animate({right: 140}, 800);", 500);
 	$('#change-tip').fadeIn();
 })
@@ -336,17 +289,13 @@ function error(m){
 		return;
 	} 
 	$('#notifications').append($('<div class="error">').text(m));
-	clearTimeout(error_timeout);
-	clearTimeout(clear_timeout);
 
-	error_offset = 30;
-	$('#messages').stop().animate({bottom: 50 + error_offset + typing_offset, scrollTop: $("#messages")[0].scrollHeight}, 200);
-	$('#users').animate({bottom: 50 + error_offset + typing_offset + newmsg_offset}, 200);
+	$('#messages').stop().animate({bottom: 50, scrollTop: $("#messages")[0].scrollHeight}, 200);
+	$('#users').animate({bottom: 50}, 200);
 	$('.error:last').animate({bottom: 50 + typing_offset}, 200);
 
 	clear_timeout = setTimeout("$('.error:not(:last)').remove();", 200)
 	error_timeout = setTimeout(function() {
-		error_offset = 0;
 		$('.error:last').animate({bottom: 0}, 200);
 		updateAnimation();
 	}, 3000);
@@ -385,14 +334,14 @@ function typing_change(state, user){
 		typing_offset = 25;
 		$('#typing').animate({bottom: 50}, 200);
 		if(!($(window).height()-50 < $("#messages")[0].scrollHeight))
-			$('#messages').animate({bottom: 50 + typing_offset + error_offset}, 200);
-		$('#users').stop().animate({bottom: 50 + typing_offset + error_offset + newmsg_offset/2}, 200);
+			$('#messages').animate({bottom: 50 + typing_offset}, 200);
+		$('#users').stop().animate({bottom: 50 + typing_offset + newmsg_offset/2}, 200);
 	}
 }
 
 function updateAnimation(){
-	$('#messages').animate({bottom: 50 + typing_offset + error_offset}, 200);
-	   $('#users').animate({bottom: 50 + typing_offset + error_offset + newmsg_offset}, 200);
+	$('#messages').animate({bottom: 50 + typing_offset}, 200);
+	   $('#users').animate({bottom: 50 + typing_offset + newmsg_offset}, 200);
 }
 
 // black info messages
@@ -419,7 +368,7 @@ function msg(m, user, hue){
 	$('#messages').append($('<li>').append($('<div class="' + u + '">').html(user).click(function() {
 		$("#m").val($("#m").val() + '@' + $(this).text() + " ");
 		$("#input #m").focus(); // username append to input
-	}).fadeIn(300)).append($('<div class="' + id + '">').html(twemoji.parse(m)).css("background-color", colour).css("color", idealTextColor(colour)).fadeIn(300)).append($('<div class="time">').html(getTime())));
+	}).fadeIn(300)).append($('<div class="' + id + '">').html(twemoji.parse(m)).css("background-color", colour).css("color", idealTextColour(colour)).fadeIn(300)).append($('<div class="time">').html(getTime())));
 	/* append li -> append username -> click on username add to input -> fade username on entrance -> append message -> parse emoji -> set background & text colour -> fade message on entrance -> append time */
 
 	// blank username when multiple messages from same person
@@ -434,9 +383,12 @@ function msg(m, user, hue){
 	prev_msg_username = user;
 	scroll(offset);
 
+	$(".u").css({"color": idealTextColour(gammaColour)});
+
 	if(user !== username && !document.hasFocus()){
 		notifications++;
 		Tinycon.setBubble(notifications);
+		setTitle();
 	}
 }
 
@@ -478,7 +430,19 @@ function scroll(offset){
 // click on indicator = scroll bottom
 $("#newmsg").click(function(){
 	$("#messages").animate({scrollTop: $("#messages")[0].scrollHeight }, "slow");
+	$("#newmsg").animate({bottom: 0}, "slow");
 });
+
+function change_gamma(gamma){
+	user_gamma = gamma;
+	gammaColour = "hsl(0, 0%, " + (100 - user_gamma) + "%)";
+
+	$("html").css({"background-color": gammaColour, "color": idealTextColour(gammaColour)});
+	$(".u").css({"color": idealTextColour(gammaColour)});
+	$("#top-gradient").css({"background": "-moz-linear-gradient(top, hsla(0, 0%, " + (100 - user_gamma) + ", 1) 0%, hsla(0, 0%, " + (100 - user_gamma) + ", 0) 100%)"})
+	$("#top-gradient").css({"background": "-webkit-gradient(left top, left bottom, color-stop(0%, hsla(0, 0%, " + (100 - user_gamma) + ", 1)), color-stop(100%, hsla(0, 0%, " + (100 - user_gamma) + ", 0)))"})
+	document.cookie=("gamma=" + user_gamma);
+}
 
 // manage colour
 function change_color(hue){
@@ -499,18 +463,18 @@ function change_color(hue){
 		twenty: "hsl(" + (user_hue) + ", 100%, 20%)"
 	};
 
-	$("#input #m").css({"background-color": colours.ninetyf, "color": idealTextColor(colours.ninetyf)}); //95
-	$("#float-logo, #sendbtn").css({"background-color": colours.fifty, "color": idealTextColor(colours.fifty)}); //50
-	$("#float-panel").css({"background-color": colours.fortys, "color": idealTextColor(colours.fifty)}); //45
-	$("#float-username").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fifty)}); //40
-	$("#float-room").css({"background-color": colours.fortyf, "color": idealTextColor(colours.fifty)}); //40
-	$("#input").css({"background-color": colours.twenty, "color": idealTextColor(colours.twenty)}); //20
-	$("#room-name").css({"color": idealTextColor(colours.fifty), "border-color": idealTextColor(colours.fifty)});
+	$("#input #m").css({"background-color": colours.ninetyf, "color": idealTextColour(colours.ninetyf)}); //95
+	$("#float-logo, #sendbtn").css({"background-color": colours.fifty, "color": idealTextColour(colours.fifty)}); //50
+	$("#float-panel").css({"background-color": colours.fortys, "color": idealTextColour(colours.fifty)}); //45
+	$("#float-username").css({"background-color": colours.fortyf, "color": idealTextColour(colours.fifty)}); //40
+	$("#float-room").css({"background-color": colours.fortyf, "color": idealTextColour(colours.fifty)}); //40
+	$("#input").css({"background-color": colours.forty, "color": idealTextColour(colours.forty)}); //20
+	$("#room-name").css({"color": idealTextColour(colours.fifty), "border-color": idealTextColour(colours.fifty)});
 	// Text colour
-	$("#float-panel > h2, #users li, .version").css("color", idealTextColor(colours.fifty));
+	$("#float-panel > h2, #users li, .version").css("color", idealTextColour(colours.fifty));
 
 	// Logo colour
-	if($("#float-logo").css("color") === "rgb(245, 245, 245)")
+	if($("#float-logo").css("color") === "rgb(240, 240, 240)")
 		$("#logo").attr('src', "/assets/i/bubbl.png")
 	else
 		$("#logo").attr('src', "/assets/i/bubbl_b.png")
@@ -522,16 +486,17 @@ function change_color(hue){
 	document.cookie=("hue=" + user_hue);
 }
 
-// text colour functions
-function idealTextColor(bgColorhsl) {
+// text colour functions : input background colour, returns hex text colour
+function idealTextColour(bgColorhsl) {
 	bgColor = color2color(bgColorhsl, "hex");
-   	var nThreshold = 105;
+   	var nThreshold = 110;
    	var components = getRGBComponents(bgColor);
    	var bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
 
-   	return ((255 - bgDelta) < nThreshold) ? "#000000" : "#F5F5F5";   
+   	return ((255 - bgDelta) < nThreshold) ? "#000000" : "#F0F0F0";   
 }
 
+// takes hex colour and returns RGB value
 function getRGBComponents(color) {       
 
     var r = color.substring(1, 3);
@@ -545,17 +510,6 @@ function getRGBComponents(color) {
     };
 }
 
-function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0; i<ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1);
-        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
-    }
-    return "";
-}
-
 // Hue Slider
 $(function() {
     $("#hue-slider").slider({
@@ -567,14 +521,33 @@ $(function() {
       change: refreshSwatch
     });
     $("#hue-slider").slider( "value", user_hue );
-	$(".ui-slider-handle").css( "background", colours.fifty);
+	$("#hue-slider .ui-slider-handle").css("background", colours.fifty);
 });
 
 function refreshSwatch() {
 	change_color($("#hue-slider").slider("value"));
-	$(".ui-slider-handle").css( "background", colours.fifty);
 }
 
+// darkness slider
+$(function(){
+	$('#gamma-slider').slider({
+		orientation: "horizontal",
+		range: "min",
+		max: 100,
+		value: 0,
+		slide: refreshGamma,
+		change: refreshGamma
+	});
+	$("#gamma-slider").slider("value", user_gamma);
+	$("#gamma-slider .ui-slider-handle").css("background", gammaColour);
+});
+
+function refreshGamma(){
+	change_gamma($("#gamma-slider").slider("value"));
+}
+
+
+// time formatted as HH:MM
 function getTime() {
 	d = new Date();
 	if (d.getMinutes() < 10) 
@@ -583,6 +556,8 @@ function getTime() {
     	return d.getHours() + ":" + d.getMinutes();
 }
 
+
+// join/leave badges show
 function joinBadge(username) {
 	$('#user-list').prepend($('<li class="online">').html("+ " + username).animate({right: 140}, 'fast'));
 
@@ -613,4 +588,12 @@ function leaveBadge(username) {
 				}
 			});
 		}, 5000);
+}
+
+// set document title / tab name
+function setTitle(){
+	if(notifications > 0)
+		document.title = "(" + notifications + ") " + username + '@bubbl.';
+	else
+		document.title = username + '@bubbl.';
 }
